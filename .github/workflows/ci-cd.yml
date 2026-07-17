@@ -1,0 +1,66 @@
+name: Zopify Admin Dashboard CI/CD Pipeline
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: admin/package-lock.json
+
+      - name: Install Dependencies
+        run: |
+          cd admin
+          npm ci
+
+      - name: Run Build Test
+        run: |
+          cd admin
+          npm run build
+        env:
+          VITE_API_URL: "http://api.zopify.local/api/v1"
+
+  docker-build-push:
+    needs: build-and-check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./admin
+          push: true
+          build-args: |
+            VITE_API_URL=http://api.zopify.local/api/v1
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/zopify-admin:latest
+            ${{ secrets.DOCKER_USERNAME }}/zopify-admin:${{ github.sha }}
