@@ -11,11 +11,15 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ user, theme, setTheme, onLogout }) => {
   return (
     <header className="flex items-center justify-between px-8 py-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-cardbg-dark transition-all duration-200">
-      <div className="flex items-center gap-3 text-xl font-bold tracking-tight text-accent dark:text-accent-light">
-        <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-        </svg>
-        <span>Zonify Admin</span>
+      <div className="flex items-center gap-2.5 text-xl font-bold tracking-tight text-accent dark:text-accent-light">
+        <img 
+          src="/logo.png" 
+          className="w-8 h-8 rounded-lg object-contain bg-slate-100 dark:bg-slate-800 p-0.5 border border-slate-200 dark:border-slate-700" 
+          alt="Zopify" 
+        />
+        <span className="bg-gradient-to-r from-accent to-purple-650 bg-clip-text text-transparent dark:from-accent-light dark:to-purple-400">
+          Zopify Admin
+        </span>
       </div>
 
       <div className="flex items-center gap-4">

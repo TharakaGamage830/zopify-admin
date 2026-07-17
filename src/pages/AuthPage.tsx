@@ -31,7 +31,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLogin }) => {
           <div className="p-3 bg-accent/10 text-accent rounded-full mb-3">
             <ShieldAlert size={28} />
           </div>
-          <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200">Zonify Control Center</h2>
+          <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200">Zopify Control Center</h2>
           <p className="text-xs text-slate-400 mt-1">Authorized Admin / Staff credentials required.</p>
         </div>
 

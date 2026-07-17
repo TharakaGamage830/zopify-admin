@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { api, setAuth, clearAuth, getUser } from './services/api';
+import { setAuth, clearAuth, getUser } from './services/api';
 import type { Product, Category, Order, DashboardSummary } from './types';
 import { Navbar } from './components/Navbar';
 import { Sidebar } from './components/Sidebar';
@@ -9,6 +9,12 @@ import { CategoriesPage } from './pages/CategoriesPage';
 import { OrdersPage } from './pages/OrdersPage';
 import { AuthPage } from './pages/AuthPage';
 import { ProductFormModal } from './components/modals/ProductFormModal';
+
+// Import isolated domain service API layers for admin console
+import { authServiceAPI } from './services/authServiceAPI';
+import { productServiceAPI } from './services/productServiceAPI';
+import { orderServiceAPI } from './services/orderServiceAPI';
+import { dashboardServiceAPI } from './services/dashboardServiceAPI';
 
 function App() {
   // Theme State
@@ -55,7 +61,7 @@ function App() {
   const detectFeaturesAndLoad = async () => {
     // 1. Detect Category module
     try {
-      const cats = await api.get<Category[]>('/categories');
+      const cats = await productServiceAPI.getCategories();
       setCategories(cats);
       setFeatures((f) => ({ ...f, category: true }));
     } catch (e: any) {
@@ -75,7 +81,7 @@ function App() {
 
   const loadDashboardMetrics = async () => {
     try {
-      const summary = await api.get<DashboardSummary>('/dashboard/summary');
+      const summary = await dashboardServiceAPI.getSummary();
       setDashboardSummary(summary);
     } catch (e) {
       console.error('Error fetching analytics dashboard:', e);
@@ -84,7 +90,7 @@ function App() {
 
   const loadProducts = async () => {
     try {
-      const res = await api.get('/products?limit=100');
+      const res = await productServiceAPI.getProducts();
       setProducts(res.items);
     } catch (e) {
       console.error('Error fetching products:', e);
@@ -93,7 +99,7 @@ function App() {
 
   const loadOrders = async () => {
     try {
-      const ords = await api.get<Order[]>('/orders');
+      const ords = await orderServiceAPI.getOrders();
       setOrders(ords);
     } catch (e) {
       console.error('Error fetching orders:', e);
@@ -102,7 +108,7 @@ function App() {
 
   // Auth Action handlers
   const handleLogin = async (email: string, password: string) => {
-    const data = await api.post('/auth/login', { email, password });
+    const data = await authServiceAPI.login(email, password);
     if (!['admin', 'staff'].includes(data.user.role)) {
       throw new Error('Not authorized to access the Admin Console');
     }
@@ -113,7 +119,7 @@ function App() {
 
   const handleLogout = async () => {
     try {
-      await api.post('/auth/logout', { refreshToken: localStorage.getItem('admin_refreshToken') });
+      await authServiceAPI.logout(localStorage.getItem('admin_refreshToken'));
     } catch (e) {}
     clearAuth();
     setUser(null);
@@ -127,10 +133,10 @@ function App() {
   const handleProductSubmit = async (formData: any) => {
     try {
       if (editingProduct) {
-        await api.patch(`/products/${editingProduct.id}`, formData);
+        await productServiceAPI.updateProduct(editingProduct.id, formData);
         alert('Product updated successfully');
       } else {
-        await api.post('/products', formData);
+        await productServiceAPI.createProduct(formData);
         alert('Product created successfully');
       }
       setIsProductModalOpen(false);
@@ -145,7 +151,7 @@ function App() {
   const handleDeleteProduct = async (id: string) => {
     if (!confirm('Are you sure you want to delete/deactivate this product?')) return;
     try {
-      const res = await api.delete(`/products/${id}`);
+      const res = await productServiceAPI.deleteProduct(id);
       alert(res.message || 'Product deleted');
       loadProducts();
       loadDashboardMetrics();
@@ -157,7 +163,7 @@ function App() {
   // Category actions
   const handleCreateCategory = async (name: string, slug: string, parentId?: string) => {
     try {
-      await api.post('/categories', { name, slug, parentId });
+      await productServiceAPI.createCategory(name, slug, parentId);
       alert('Category created successfully');
       detectFeaturesAndLoad();
     } catch (e: any) {
@@ -168,7 +174,7 @@ function App() {
   const handleDeleteCategory = async (id: string) => {
     if (!confirm('Delete category? Parent associations will be unlinked.')) return;
     try {
-      await api.delete(`/categories/${id}`);
+      await productServiceAPI.deleteCategory(id);
       alert('Category deleted');
       detectFeaturesAndLoad();
       loadProducts();
@@ -180,7 +186,7 @@ function App() {
   // Order actions
   const handleUpdateOrderStatus = async (orderId: string, status: Order['status']) => {
     try {
-      await api.patch(`/orders/${orderId}/status`, { status });
+      await orderServiceAPI.updateOrderStatus(orderId, status);
       alert('Order status updated');
       loadOrders();
       loadDashboardMetrics();
@@ -191,7 +197,7 @@ function App() {
 
   const handleUpdateOrderPayment = async (orderId: string, paymentStatus: string) => {
     try {
-      await api.patch(`/orders/${orderId}/payment`, { paymentStatus });
+      await orderServiceAPI.updateOrderPayment(orderId, paymentStatus);
       alert('Payment status updated');
       loadOrders();
       loadDashboardMetrics();
