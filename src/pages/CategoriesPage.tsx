@@ -15,8 +15,33 @@ export const CategoriesPage: React.FC<CategoriesPageProps> = ({ categories, onCr
     parentId: '',
   });
 
+  const slugify = (text: string) => {
+    return text
+      .toString()
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/[^\w\-]+/g, '')
+      .replace(/\-\-+/g, '-');
+  };
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setForm({
+      ...form,
+      name: val,
+      slug: slugify(val)
+    });
+  };
+
+  const slugExists = categories.some((c) => c.slug === form.slug);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (slugExists) {
+      alert('This slug already exists. Please choose a unique slug.');
+      return;
+    }
     onCreate(form.name, form.slug, form.parentId || undefined);
     setForm({ name: '', slug: '', parentId: '' });
   };
@@ -88,7 +113,7 @@ export const CategoriesPage: React.FC<CategoriesPageProps> = ({ categories, onCr
                   required
                   className="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:border-accent"
                   value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  onChange={handleNameChange}
                 />
               </div>
               <div>
@@ -98,8 +123,13 @@ export const CategoriesPage: React.FC<CategoriesPageProps> = ({ categories, onCr
                   required
                   className="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:border-accent"
                   value={form.slug}
-                  onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                  onChange={(e) => setForm({ ...form, slug: slugify(e.target.value) })}
                 />
+                {form.slug && (
+                  <span className={`text-xs mt-1 block font-semibold ${slugExists ? 'text-red-500' : 'text-emerald-500'}`}>
+                    {slugExists ? '✕ Slug already exists' : '✓ Slug is available!'}
+                  </span>
+                )}
               </div>
               {categories.length > 0 && (
                 <div>

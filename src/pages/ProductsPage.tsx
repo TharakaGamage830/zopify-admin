@@ -9,6 +9,7 @@ interface ProductsPageProps {
   onEdit: (product: Product) => void;
   onDelete: (id: string) => void;
   onOpenCreateModal: () => void;
+  onToggleActive: (product: Product) => void;
 }
 
 export const ProductsPage: React.FC<ProductsPageProps> = ({
@@ -16,6 +17,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
   onEdit,
   onDelete,
   onOpenCreateModal,
+  onToggleActive,
 }) => {
   return (
     <div className="text-left animate-in fade-in duration-200">
@@ -37,6 +39,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
         products={products}
         onEdit={onEdit}
         onDelete={onDelete}
+        onToggleActive={onToggleActive}
       />
     </div>
   );

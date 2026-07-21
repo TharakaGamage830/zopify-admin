@@ -28,5 +28,11 @@ export const productServiceAPI = {
 
   deleteCategory: async (id: string) => {
     return api.delete<{ success: boolean; message: string }>(`/categories/${id}`);
+  },
+
+  uploadImage: async (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return api.post<{ url: string; originalName: string }>('/products/upload', formData);
   }
 };

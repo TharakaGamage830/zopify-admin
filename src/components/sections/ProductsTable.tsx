@@ -6,9 +6,10 @@ interface ProductsTableProps {
   products: Product[];
   onEdit: (product: Product) => void;
   onDelete: (id: string) => void;
+  onToggleActive: (product: Product) => void;
 }
 
-export const ProductsTable: React.FC<ProductsTableProps> = ({ products, onEdit, onDelete }) => {
+export const ProductsTable: React.FC<ProductsTableProps> = ({ products, onEdit, onDelete, onToggleActive }) => {
   return (
     <div className="overflow-hidden border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-cardbg-dark shadow-sm text-left">
       <div className="overflow-x-auto">
@@ -36,13 +37,17 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({ products, onEdit, 
                   {p.stockQuantity}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                    p.isActive 
-                      ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400' 
-                      : 'bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400'
-                  }`}>
+                  <button
+                    onClick={() => onToggleActive(p)}
+                    className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full cursor-pointer hover:opacity-80 transition ${
+                      p.isActive 
+                        ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400' 
+                        : 'bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400'
+                    }`}
+                    title="Click to toggle Active/Inactive"
+                  >
                     {p.isActive ? 'Active' : 'Inactive'}
-                  </span>
+                  </button>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                   <div className="flex gap-2">

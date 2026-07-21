@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { Product, Category } from '../../types';
-import { X } from 'lucide-react';
+import { X, Plus, Trash2 } from 'lucide-react';
+import { productServiceAPI } from '../../services/productServiceAPI';
 
 interface ProductFormModalProps {
   isOpen: boolean;
@@ -8,6 +9,7 @@ interface ProductFormModalProps {
   onSubmit: (data: any) => void;
   product: Product | null;
   categories: Category[];
+  products: Product[];
 }
 
 export const ProductFormModal: React.FC<ProductFormModalProps> = ({
@@ -16,8 +18,18 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
   onSubmit,
   product,
   categories,
+  products,
 }) => {
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<{
+    name: string;
+    slug: string;
+    description: string;
+    price: number;
+    stockQuantity: number;
+    categoryId: string;
+    isActive: boolean;
+    images: string[];
+  }>({
     name: '',
     slug: '',
     description: '',
@@ -25,10 +37,43 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
     stockQuantity: 0,
     categoryId: '',
     isActive: true,
+    images: [],
   });
+
+  const [uploading, setUploading] = useState(false);
+
+  const slugify = (text: string) => {
+    return text
+      .toString()
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/[^\w\-]+/g, '')
+      .replace(/\-\-+/g, '-');
+  };
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setForm((prev) => ({
+      ...prev,
+      name: val,
+      slug: slugify(val),
+    }));
+  };
+
+  const slugExists = products.some((p) => p.slug === form.slug && p.id !== product?.id);
 
   useEffect(() => {
     if (product) {
+      let productImages: string[] = [];
+      try {
+        if (product.images) {
+          productImages = typeof product.images === 'string' ? JSON.parse(product.images) : product.images;
+        }
+      } catch (e) {
+        console.error('Failed to parse product images:', e);
+      }
+
       setForm({
         name: product.name,
         slug: product.slug,
@@ -37,6 +82,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
         stockQuantity: product.stockQuantity,
         categoryId: product.categoryId || '',
         isActive: product.isActive,
+        images: Array.isArray(productImages) ? productImages : [],
       });
     } else {
       setForm({
@@ -47,14 +93,57 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
         stockQuantity: 0,
         categoryId: '',
         isActive: true,
+        images: [],
       });
     }
   }, [product, isOpen]);
 
   if (!isOpen) return null;
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (form.images.length >= 4) {
+      alert('You can upload up to 4 images only.');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const res = await productServiceAPI.uploadImage(file);
+      setForm((prev) => ({
+        ...prev,
+        images: [...prev.images, res.url],
+      }));
+    } catch (err: any) {
+      alert(err.message || 'Failed to upload image');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleRemoveImage = (indexToRemove: number) => {
+    setForm((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, idx) => idx !== indexToRemove),
+    }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (slugExists) {
+      alert('This slug already exists. Please choose a unique slug.');
+      return;
+    }
+    if (form.images.length < 2) {
+      alert('A product must have at least 2 images.');
+      return;
+    }
+    if (form.images.length > 4) {
+      alert('A product can have at most 4 images.');
+      return;
+    }
     onSubmit({
       ...form,
       price: parseFloat(form.price.toString()),
@@ -64,9 +153,9 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-cardbg-dark border border-slate-200 dark:border-slate-800 rounded-xl shadow-lg w-full max-w-lg overflow-hidden text-left animate-in fade-in zoom-in-95 duration-150">
+      <div className="bg-white dark:bg-cardbg-dark border border-slate-200 dark:border-slate-800 rounded-xl shadow-lg w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col text-left animate-in fade-in zoom-in-95 duration-150">
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800 shrink-0">
           <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200">
             {product ? 'Edit Product' : 'Create Product'}
           </h2>
@@ -79,7 +168,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
         </div>
 
         {/* Modal Form */}
-        <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Product Name</label>
@@ -88,7 +177,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
                 required
                 className="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:border-accent"
                 value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                onChange={handleNameChange}
               />
             </div>
             <div>
@@ -98,8 +187,13 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
                 required
                 className="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:border-accent"
                 value={form.slug}
-                onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                onChange={(e) => setForm({ ...form, slug: slugify(e.target.value) })}
               />
+              {form.slug && (
+                <span className={`text-xs mt-1 block font-semibold ${slugExists ? 'text-red-500' : 'text-emerald-500'}`}>
+                  {slugExists ? '✕ Slug already exists' : '✓ Slug is available!'}
+                </span>
+              )}
             </div>
           </div>
 
@@ -152,6 +246,50 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
             </div>
           )}
 
+          {/* Product Image Upload Section */}
+          <div className="border-t border-slate-100 dark:border-slate-800 pt-4 mt-2">
+            <div className="flex justify-between items-center mb-2">
+              <span className="block text-xs font-semibold text-slate-400 uppercase">Product Images ({form.images.length}/4)</span>
+              <span className="text-[10px] text-slate-400 font-semibold italic">* Upload at least 2, up to 4 images</span>
+            </div>
+
+            <div className="grid grid-cols-4 gap-3">
+              {form.images.map((imgUrl, idx) => (
+                <div key={idx} className="relative aspect-square rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-55 dark:bg-slate-900 overflow-hidden group">
+                  <img src={imgUrl} className="w-full h-full object-cover" alt="Product" />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveImage(idx)}
+                    className="absolute top-1 right-1 p-1 bg-red-650 hover:bg-red-750 text-white rounded-full transition shadow opacity-0 group-hover:opacity-100"
+                    title="Remove Image"
+                  >
+                    <Trash2 size={11} />
+                  </button>
+                </div>
+              ))}
+
+              {form.images.length < 4 && (
+                <label className="aspect-square rounded-lg border border-dashed border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30 hover:bg-slate-50 dark:hover:bg-slate-900 hover:border-accent dark:hover:border-accent flex flex-col items-center justify-center gap-1 cursor-pointer transition select-none">
+                  {uploading ? (
+                    <div className="w-5 h-5 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
+                  ) : (
+                    <>
+                      <Plus size={16} className="text-slate-400" />
+                      <span className="text-[10px] text-slate-400 font-semibold">Upload</span>
+                    </>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageUpload}
+                    disabled={uploading}
+                  />
+                </label>
+              )}
+            </div>
+          </div>
+
           <div className="flex items-center gap-2 mt-2">
             <input
               type="checkbox"
@@ -165,7 +303,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
             </label>
           </div>
 
-          <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+          <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 shrink-0">
             <button
               type="button"
               onClick={onClose}
@@ -175,6 +313,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
             </button>
             <button
               type="submit"
+              disabled={uploading}
               className="px-4 py-2 text-sm font-medium bg-accent text-white hover:bg-accent-hover rounded-lg transition shadow-sm"
             >
               Save Product
