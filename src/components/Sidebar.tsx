@@ -18,6 +18,7 @@ import {
   Image as ImageIcon,
   RotateCcw,
   Shield,
+  Bell,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -42,6 +43,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ showCategoryTab }) => {
     { id: 'offers', path: '/offers', label: 'Auto Promotions', icon: Tag },
     { id: 'packages', path: '/packages', label: 'Product Packages', icon: PackageIcon },
     { id: 'banners', path: '/banners', label: 'Ad Banners', icon: ImageIcon },
+    { id: 'broadcasts', path: '/notifications', label: 'Broadcast Center', icon: Bell },
   ];
 
   const logisticsContentItems = [

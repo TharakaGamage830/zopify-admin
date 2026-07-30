@@ -218,4 +218,56 @@ export interface Review {
   user?: { id: string; fullName: string; email?: string };
 }
 
+export type PlacementKey =
+  | 'home_top'
+  | 'home_bottom'
+  | 'storefront_top'
+  | 'storefront_middle'
+  | 'storefront_bottom'
+  | 'category_banner'
+  | 'product_detail'
+  | 'cart_promo';
+
+export interface PredefinedPlacement {
+  key: PlacementKey;
+  title: string;
+  pageName: string;
+  location: string;
+  aspectRatio: string;
+  description: string;
+  recommendedSize: string;
+  sketchType: PlacementKey;
+}
+
+export interface AdBanner {
+  id: string;
+  placementKey: PlacementKey;
+  title: string;
+  subtitle?: string;
+  badgeText?: string;
+  buttonText?: string;
+  imageUrl: string;
+  linkUrl: string;
+  isActive: boolean;
+  priority?: number;
+  startDate?: string;
+  endDate?: string;
+}
+
+export type TargetAudience = 'all' | 'active' | 'vip' | 'inactive';
+
+export interface BroadcastNotification {
+  id: string;
+  title: string;
+  message: string;
+  type: 'promo' | 'system' | 'order' | 'security';
+  targetAudience: TargetAudience;
+  targetAudienceLabel: string;
+  scheduledAt: string | null;
+  status: 'sent' | 'scheduled' | 'draft';
+  recipientCount: number;
+  createdAt: string;
+}
+
+
 

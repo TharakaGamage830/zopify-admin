@@ -16,6 +16,7 @@ import { CouponsPage } from './pages/CouponsPage';
 import { OffersPage } from './pages/OffersPage';
 import { PackagesPage } from './pages/PackagesPage';
 import { BannersPage } from './pages/BannersPage';
+import { NotificationsPage } from './pages/NotificationsPage';
 import { ShippingZonesPage } from './pages/ShippingZonesPage';
 import { CmsAdminPage } from './pages/CmsAdminPage';
 import { ReviewsPage } from './pages/ReviewsPage';
@@ -173,6 +174,7 @@ function AppRoutes() {
         <Route path="/offers" element={<OffersPage />} />
         <Route path="/packages" element={<PackagesPage />} />
         <Route path="/banners" element={<BannersPage />} />
+        <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/shipping-zones" element={<ShippingZonesPage />} />
         <Route path="/cms-pages" element={<CmsAdminPage />} />
         <Route path="/reviews" element={<ReviewsPage />} />
