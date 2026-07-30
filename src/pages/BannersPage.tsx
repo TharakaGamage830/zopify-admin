@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Image as ImageIcon, Plus, Trash2, Edit, RefreshCw, CheckCircle, XCircle } from 'lucide-react';
 import { bannerServiceAPI } from '../services/bannerServiceAPI';
+import { ImageUploaderManager } from '../components/ImageUploaderManager';
 import type { Banner } from '../types';
 
 export const BannersPage: React.FC = () => {
@@ -11,7 +12,7 @@ export const BannersPage: React.FC = () => {
 
   // Form states
   const [title, setTitle] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
+  const [images, setImages] = useState<string[]>([]);
   const [linkUrl, setLinkUrl] = useState('');
   const [placement, setPlacement] = useState('home');
   const [sortOrder, setSortOrder] = useState('0');
@@ -36,7 +37,7 @@ export const BannersPage: React.FC = () => {
   const openCreateModal = () => {
     setEditingBanner(null);
     setTitle('');
-    setImageUrl('');
+    setImages([]);
     setLinkUrl('');
     setPlacement('home');
     setSortOrder('0');
@@ -47,7 +48,7 @@ export const BannersPage: React.FC = () => {
   const openEditModal = (banner: Banner) => {
     setEditingBanner(banner);
     setTitle(banner.title || '');
-    setImageUrl(banner.imageUrl);
+    setImages(banner.imageUrl ? [banner.imageUrl] : []);
     setLinkUrl(banner.linkUrl || '');
     setPlacement(banner.placement || 'home');
     setSortOrder(String(banner.sortOrder || 0));
@@ -57,10 +58,16 @@ export const BannersPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (images.length < 1) {
+      alert('Please upload a banner image.');
+      return;
+    }
+
     try {
       const payload = {
         title: title || undefined,
-        imageUrl,
+        imageUrl: images[0],
         linkUrl: linkUrl || undefined,
         placement,
         sortOrder: parseInt(sortOrder, 10),
@@ -109,21 +116,21 @@ export const BannersPage: React.FC = () => {
             Promotional Banners
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Manage homepage sliders, sidebar banners, and category hero images.
+            Manage homepage sliders, sidebar banners, and hero ad graphics with 1:2 height:width ratio.
           </p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={fetchBanners}
             disabled={loading}
-            className="px-3 py-2 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center gap-1.5 transition-all"
+            className="px-3 py-2 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center gap-1.5 transition-all cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             Refresh
           </button>
           <button
             onClick={openCreateModal}
-            className="px-4 py-2 text-xs font-medium rounded-lg bg-accent hover:bg-accent-hover text-white shadow-sm flex items-center gap-1.5 transition-all"
+            className="px-4 py-2 text-xs font-medium rounded-lg bg-accent hover:bg-accent-hover text-white shadow-sm flex items-center gap-1.5 transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             Create Banner
@@ -149,7 +156,8 @@ export const BannersPage: React.FC = () => {
               key={banner.id}
               className="bg-white dark:bg-cardbg-dark border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm flex flex-col justify-between"
             >
-              <div className="relative h-40 bg-slate-100 dark:bg-slate-900">
+              {/* Aspect Ratio 2:1 container (1:2 height:width) */}
+              <div className="relative w-full aspect-[2/1] bg-slate-100 dark:bg-slate-900 overflow-hidden">
                 <img
                   src={banner.imageUrl}
                   alt={banner.title || 'Banner'}
@@ -161,7 +169,7 @@ export const BannersPage: React.FC = () => {
                 <div className="absolute top-2 right-2 flex items-center gap-1">
                   <button
                     onClick={() => handleToggleActive(banner)}
-                    className={`px-2 py-0.5 rounded-full text-[10px] font-medium flex items-center gap-1 shadow-md ${
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-medium flex items-center gap-1 shadow-md cursor-pointer ${
                       banner.isActive
                         ? 'bg-emerald-500 text-white'
                         : 'bg-slate-700 text-slate-200'
@@ -172,7 +180,7 @@ export const BannersPage: React.FC = () => {
                   </button>
                 </div>
                 <span className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/60 text-white font-mono text-[10px] uppercase">
-                  {banner.placement}
+                  {banner.placement} • 1:2 Ratio
                 </span>
               </div>
 
@@ -188,13 +196,15 @@ export const BannersPage: React.FC = () => {
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => openEditModal(banner)}
-                      className="p-1.5 text-slate-400 hover:text-accent rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                      className="p-1.5 text-slate-400 hover:text-accent rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                      title="Edit Banner"
                     >
                       <Edit className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleDelete(banner.id)}
-                      className="p-1.5 text-slate-400 hover:text-rose-500 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                      className="p-1.5 text-slate-400 hover:text-rose-500 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                      title="Delete Banner"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -208,32 +218,37 @@ export const BannersPage: React.FC = () => {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white dark:bg-cardbg-dark border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl max-w-md w-full p-6 space-y-4 text-left">
-            <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200">
-              {editingBanner ? 'Edit Banner' : 'Create Banner'}
-            </h2>
-            <form onSubmit={handleSubmit} className="space-y-3 text-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
+          <div className="bg-white dark:bg-cardbg-dark border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl max-w-lg w-full p-6 space-y-4 text-left my-auto">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                <ImageIcon className="w-5 h-5 text-violet-500" />
+                <span>{editingBanner ? 'Edit Banner' : 'Create Banner'}</span>
+              </h2>
+              <span className="text-xs font-mono text-slate-400">1:2 (Height:Width) Ratio</span>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+              
+              {/* Banner Image Uploader & Cropper */}
+              <ImageUploaderManager
+                images={images}
+                onChange={setImages}
+                maxImages={1}
+                minImages={1}
+                aspectRatio={2}
+                aspectRatioLabel="1:2 (Height : Width) Ratio"
+                label="Banner Graphic Image (1:2 Height:Width Ratio)"
+              />
+
               <div>
                 <label className="block font-medium text-slate-700 dark:text-slate-300 mb-1">Banner Title</label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. Summer Sale 50% Off Banner"
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200"
-                />
-              </div>
-
-              <div>
-                <label className="block font-medium text-slate-700 dark:text-slate-300 mb-1">Image URL *</label>
-                <input
-                  type="url"
-                  required
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  placeholder="https://..."
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200"
+                  placeholder="e.g. Summer Workstation Promotion Banner"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200"
                 />
               </div>
 
@@ -244,7 +259,7 @@ export const BannersPage: React.FC = () => {
                   value={linkUrl}
                   onChange={(e) => setLinkUrl(e.target.value)}
                   placeholder="/collections/summer or https://..."
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200"
                 />
               </div>
 
@@ -254,7 +269,7 @@ export const BannersPage: React.FC = () => {
                   <select
                     value={placement}
                     onChange={(e) => setPlacement(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200"
                   >
                     <option value="home">Homepage Hero</option>
                     <option value="category">Category Top</option>
@@ -268,7 +283,7 @@ export const BannersPage: React.FC = () => {
                     type="number"
                     value={sortOrder}
                     onChange={(e) => setSortOrder(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200"
                   />
                 </div>
               </div>
@@ -286,17 +301,17 @@ export const BannersPage: React.FC = () => {
                 </label>
               </div>
 
-              <div className="flex justify-end gap-2 pt-3">
+              <div className="flex justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium"
+                  className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-lg bg-accent hover:bg-accent-hover text-white font-medium shadow-sm"
+                  className="px-5 py-2 rounded-xl bg-accent hover:bg-accent-hover text-white font-medium shadow-sm cursor-pointer"
                 >
                   {editingBanner ? 'Save Changes' : 'Create Banner'}
                 </button>
