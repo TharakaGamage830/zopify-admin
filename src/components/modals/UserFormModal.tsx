@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Eye, EyeOff } from 'lucide-react';
-import type { User } from '../../services/userServiceAPI';
+import type { User, UserRole } from '../../services/userServiceAPI';
 
 interface UserFormModalProps {
   isOpen: boolean;
@@ -21,7 +21,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
     email: '',
     fullName: '',
     password: '',
-    role: 'customer' as 'customer' | 'admin' | 'staff',
+    role: 'customer' as UserRole,
     isActive: true,
   });
 
@@ -150,9 +150,13 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
               <select
                 className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 focus:outline-none focus:border-accent"
                 value={form.role}
-                onChange={(e) => setForm({ ...form, role: e.target.value as any })}
+                onChange={(e) => setForm({ ...form, role: e.target.value as UserRole })}
               >
+                <option value="super_admin">Super Admin</option>
                 <option value="admin">Administrator</option>
+                <option value="catalog_manager">Catalog Manager</option>
+                <option value="order_manager">Order Manager</option>
+                <option value="support_agent">Support Agent</option>
                 <option value="staff">Staff Member</option>
               </select>
             </div>

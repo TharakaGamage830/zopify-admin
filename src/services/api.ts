@@ -75,13 +75,11 @@ export async function apiRequest<T = any>(
           } else {
             isRefreshing = false;
             clearAuth();
-            window.location.reload();
             throw new Error('Refresh token expired');
           }
         } catch (err) {
           isRefreshing = false;
           clearAuth();
-          window.location.reload();
           throw err;
         }
       }
@@ -127,13 +125,13 @@ export const api = {
     apiRequest<T>(path, {
       ...options,
       method: 'POST',
-      body: body ? JSON.stringify(body) : undefined,
+      body: body instanceof FormData ? body : body ? JSON.stringify(body) : undefined,
     }),
   patch: <T = any>(path: string, body?: any, options?: RequestInit) =>
     apiRequest<T>(path, {
       ...options,
       method: 'PATCH',
-      body: body ? JSON.stringify(body) : undefined,
+      body: body instanceof FormData ? body : body ? JSON.stringify(body) : undefined,
     }),
   delete: <T = any>(path: string, options?: RequestInit) =>
     apiRequest<T>(path, { ...options, method: 'DELETE' }),

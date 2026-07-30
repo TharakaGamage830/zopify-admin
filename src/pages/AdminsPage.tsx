@@ -18,7 +18,7 @@ export const AdminsPage: React.FC<AdminsPageProps> = ({
   onOpenCreateModal,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'staff'>('all');
+  const [roleFilter, setRoleFilter] = useState<string>('all');
 
   const filteredAdmins = admins.filter((a) => {
     const matchesSearch =
@@ -68,18 +68,26 @@ export const AdminsPage: React.FC<AdminsPageProps> = ({
         </div>
 
         {/* Role Toggle Selector */}
-        <div className="flex bg-slate-55 dark:bg-slate-900 p-1 rounded-lg border border-slate-200 dark:border-slate-800/80">
-          {(['all', 'admin', 'staff'] as const).map((role) => (
+        <div className="flex flex-wrap bg-slate-55 dark:bg-slate-900 p-1 rounded-lg border border-slate-200 dark:border-slate-800/80 gap-1">
+          {([
+            { id: 'all', label: 'All Roles' },
+            { id: 'super_admin', label: 'Super Admin' },
+            { id: 'admin', label: 'Admin' },
+            { id: 'catalog_manager', label: 'Catalog' },
+            { id: 'order_manager', label: 'Orders' },
+            { id: 'support_agent', label: 'Support' },
+            { id: 'staff', label: 'Staff' },
+          ]).map((r) => (
             <button
-              key={role}
-              onClick={() => setRoleFilter(role)}
-              className={`px-4 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider transition ${
-                roleFilter === role
+              key={r.id}
+              onClick={() => setRoleFilter(r.id)}
+              className={`px-3 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider transition ${
+                roleFilter === r.id
                   ? 'bg-accent text-white shadow-sm'
                   : 'text-slate-500 dark:text-slate-450 hover:text-slate-900 dark:hover:text-slate-200'
               }`}
             >
-              {role === 'all' ? 'All Roles' : role}
+              {r.label}
             </button>
           ))}
         </div>
@@ -104,7 +112,7 @@ export const AdminsPage: React.FC<AdminsPageProps> = ({
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-3">
                       <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm ${
-                        a.role === 'admin' 
+                        a.role === 'super_admin' || a.role === 'admin'
                           ? 'bg-rose-500/10 text-rose-500' 
                           : 'bg-indigo-500/10 text-indigo-500'
                       }`}>
@@ -120,17 +128,14 @@ export const AdminsPage: React.FC<AdminsPageProps> = ({
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold">
-                    {a.role === 'admin' ? (
-                      <div className="inline-flex items-center gap-1.5 text-rose-500 dark:text-rose-400">
-                        <ShieldAlert size={14} />
-                        <span className="capitalize text-xs font-bold tracking-wider">Administrator</span>
-                      </div>
-                    ) : (
-                      <div className="inline-flex items-center gap-1.5 text-indigo-500 dark:text-indigo-400">
-                        <ShieldCheck size={14} />
-                        <span className="capitalize text-xs font-bold tracking-wider">Staff Console</span>
-                      </div>
-                    )}
+                    <div className="inline-flex items-center gap-1.5 text-accent dark:text-accent-hover">
+                      {a.role === 'super_admin' || a.role === 'admin' ? (
+                        <ShieldAlert size={14} className="text-rose-500" />
+                      ) : (
+                        <ShieldCheck size={14} className="text-indigo-500" />
+                      )}
+                      <span className="capitalize text-xs font-bold tracking-wider">{a.role.replace('_', ' ')}</span>
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
                     <div className="flex items-center gap-2">

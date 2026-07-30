@@ -1,10 +1,19 @@
 import { api } from './api';
 
+export type UserRole =
+  | 'customer'
+  | 'super_admin'
+  | 'admin'
+  | 'catalog_manager'
+  | 'order_manager'
+  | 'support_agent'
+  | 'staff';
+
 export interface User {
   id: string;
   email: string;
   fullName: string;
-  role: 'customer' | 'admin' | 'staff';
+  role: UserRole;
   isActive: boolean;
   avatarUrl?: string;
   createdAt: string;
