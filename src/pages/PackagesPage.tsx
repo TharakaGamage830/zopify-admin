@@ -201,17 +201,17 @@ export const PackagesPage: React.FC = () => {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-left animate-in fade-in duration-200">
       {/* Header Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-xs">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="p-2 bg-indigo-500/10 text-indigo-400 rounded-xl border border-indigo-500/20">
+            <div className="p-2 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-xl border border-indigo-500/20">
               <PackageIcon size={22} />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white tracking-tight">Admin Bundle Manager</h1>
-              <p className="text-xs text-slate-400">
+              <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100 tracking-tight">Admin Bundle Manager</h1>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Manage curated product bundles, promotional packages & membership tiers
               </p>
             </div>
@@ -221,14 +221,14 @@ export const PackagesPage: React.FC = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={fetchPackages}
-            className="p-2 text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-xl transition"
+            className="p-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition cursor-pointer"
             title="Refresh Packages"
           >
             <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
           </button>
           <button
             onClick={openCreateModal}
-            className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition"
+            className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center gap-2 shadow-md shadow-indigo-600/20 transition cursor-pointer"
           >
             <Plus size={16} />
             Create Bundle Package
@@ -237,19 +237,19 @@ export const PackagesPage: React.FC = () => {
       </div>
 
       {/* Filter / Search Bar */}
-      <div className="flex items-center gap-4 bg-slate-900/60 border border-slate-800 p-4 rounded-xl">
+      <div className="flex items-center gap-4 bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 p-4 rounded-xl shadow-xs">
         <div className="relative flex-1">
-          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search packages by name..."
-            className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+            className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-indigo-500"
           />
         </div>
-        <div className="text-xs text-slate-400">
-          Total Packages: <span className="font-semibold text-white">{filteredPackages.length}</span>
+        <div className="text-xs text-slate-500 dark:text-slate-400">
+          Total Packages: <span className="font-semibold text-slate-800 dark:text-white">{filteredPackages.length}</span>
         </div>
       </div>
 
@@ -257,9 +257,9 @@ export const PackagesPage: React.FC = () => {
       {loading ? (
         <div className="p-12 text-center text-slate-500 text-xs">Loading package bundles...</div>
       ) : filteredPackages.length === 0 ? (
-        <div className="p-12 text-center bg-slate-900 border border-slate-800 rounded-2xl space-y-3">
-          <PackageIcon size={32} className="mx-auto text-slate-600" />
-          <p className="text-xs text-slate-400">No package bundles found matching your criteria.</p>
+        <div className="p-12 text-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-3 shadow-xs">
+          <PackageIcon size={32} className="mx-auto text-slate-400 dark:text-slate-600" />
+          <p className="text-xs text-slate-500 dark:text-slate-400">No package bundles found matching your criteria.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -275,13 +275,13 @@ export const PackagesPage: React.FC = () => {
             return (
               <div
                 key={pkg.id}
-                className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-sm hover:border-slate-700 transition flex flex-col justify-between"
+                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-xs hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700 transition flex flex-col justify-between"
               >
                 <div>
                   {/* Card Image Banner */}
-                  <div className="relative h-44 bg-slate-950 overflow-hidden">
+                  <div className="relative h-44 bg-slate-100 dark:bg-slate-950 overflow-hidden">
                     <img src={coverImg} alt={pkg.name} className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-black/40" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-black/40" />
 
                     <div className="absolute top-3 left-3 flex items-center gap-2">
                       <span
@@ -297,25 +297,25 @@ export const PackagesPage: React.FC = () => {
 
                     <div className="absolute bottom-3 left-4 right-4 flex items-end justify-between">
                       <div>
-                        <h3 className="text-lg font-bold text-white shadow-sm">{pkg.name}</h3>
+                        <h3 className="text-lg font-bold text-white shadow-xs">{pkg.name}</h3>
                         <p className="text-[11px] text-slate-300 font-mono">/{pkg.slug}</p>
                       </div>
                       <div className="text-right">
-                        <span className="text-lg font-extrabold text-indigo-400">Rs. {Number(pkg.price).toLocaleString()}</span>
+                        <span className="text-lg font-extrabold text-indigo-400 drop-shadow-xs">Rs. {Number(pkg.price).toLocaleString()}</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Card Content Body */}
                   <div className="p-5 space-y-4">
-                    <p className="text-xs text-slate-400 line-clamp-2 min-h-[32px]">
+                    <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 min-h-[32px]">
                       {pkg.description || 'No detailed description specified for this package bundle.'}
                     </p>
 
-                    <div className="p-3 bg-slate-950/80 rounded-xl border border-slate-800/80 space-y-2">
+                    <div className="p-3 bg-slate-50 dark:bg-slate-950/80 rounded-xl border border-slate-200 dark:border-slate-800/80 space-y-2">
                       <div className="flex items-center justify-between text-xs">
-                        <span className="text-slate-400">Addon Limit Policy:</span>
-                        <span className="font-semibold text-white capitalize">
+                        <span className="text-slate-500 dark:text-slate-400">Addon Limit Policy:</span>
+                        <span className="font-semibold text-slate-800 dark:text-white capitalize">
                           {pkg.addonLimitType === 'count'
                             ? `${pkg.addonLimitValue} Products Max`
                             : `Rs. ${Number(pkg.addonLimitValue).toLocaleString()} Value Cap`}
@@ -326,13 +326,13 @@ export const PackagesPage: React.FC = () => {
                 </div>
 
                 {/* Actions Footer */}
-                <div className="p-4 bg-slate-950/40 border-t border-slate-800/80 flex items-center justify-between">
+                <div className="p-4 bg-slate-50/60 dark:bg-slate-950/40 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-between">
                   <button
                     onClick={() => handleToggleActive(pkg)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
                       pkg.isActive
-                        ? 'bg-slate-800 text-slate-400 hover:text-white'
-                        : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                        ? 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                        : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
                     }`}
                   >
                     {pkg.isActive ? 'Disable' : 'Enable'}
@@ -341,14 +341,14 @@ export const PackagesPage: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => openEditModal(pkg)}
-                      className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition"
+                      className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer"
                     >
                       <Edit size={14} />
                       Edit
                     </button>
                     <button
                       onClick={() => handleDeletePackage(pkg.id)}
-                      className="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg hover:bg-slate-800 transition"
+                      className="p-1.5 text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
                       title="Delete Package"
                     >
                       <Trash2 size={15} />
@@ -363,15 +363,15 @@ export const PackagesPage: React.FC = () => {
 
       {/* Modal for Create/Edit Package */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl flex flex-col">
-            <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/40">
-              <h3 className="text-base font-semibold text-white">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl flex flex-col text-left">
+            <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950/40">
+              <h3 className="text-base font-semibold text-slate-800 dark:text-white">
                 {editingPackage ? 'Edit Bundle Package' : 'Create New Bundle Package'}
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-1 text-slate-400 hover:text-white rounded-lg transition"
+                className="p-1 text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-lg transition cursor-pointer"
               >
                 <XCircle size={18} />
               </button>
@@ -379,30 +379,30 @@ export const PackagesPage: React.FC = () => {
 
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Package Name</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Package Name</label>
                 <input
                   type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. Starter Tech Kit"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3.5 py-2 text-xs text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Package Slug</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Package Slug</label>
                   <input
                     type="text"
                     value={slug}
                     onChange={(e) => setSlug(e.target.value)}
                     placeholder="starter-tech-kit"
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3.5 py-2 text-xs text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-indigo-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Bundle Price (LKR)</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Bundle Price (LKR)</label>
                   <input
                     type="number"
                     step="0.01"
@@ -410,29 +410,29 @@ export const PackagesPage: React.FC = () => {
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
                     placeholder="4999.00"
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3.5 py-2 text-xs text-slate-800 dark:text-white focus:outline-none focus:border-indigo-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Package Description</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Package Description</label>
                 <textarea
                   rows={3}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Describe items and perks included in this bundle..."
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3.5 py-2 text-xs text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Addon Limit Type</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Addon Limit Type</label>
                   <select
                     value={addonLimitType}
                     onChange={(e) => setAddonLimitType(e.target.value as 'count' | 'amount')}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3.5 py-2 text-xs text-slate-800 dark:text-white focus:outline-none focus:border-indigo-500"
                   >
                     <option value="count">Item Count Limit</option>
                     <option value="amount">Rupee Amount Limit (LKR)</option>
@@ -440,24 +440,24 @@ export const PackagesPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Limit Value</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Limit Value</label>
                   <input
                     type="number"
                     value={addonLimitValue}
                     onChange={(e) => setAddonLimitValue(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3.5 py-2 text-xs text-slate-800 dark:text-white focus:outline-none focus:border-indigo-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Cover Image URL</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Cover Image URL</label>
                 <input
                   type="text"
                   value={images[0] || ''}
                   onChange={(e) => setImages([e.target.value])}
                   placeholder="https://images.unsplash.com/..."
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3.5 py-2 text-xs text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
@@ -469,22 +469,22 @@ export const PackagesPage: React.FC = () => {
                   onChange={(e) => setIsActive(e.target.checked)}
                   className="w-4 h-4 accent-indigo-500 rounded cursor-pointer"
                 />
-                <label htmlFor="pkgActive" className="text-xs font-medium text-slate-200 cursor-pointer">
+                <label htmlFor="pkgActive" className="text-xs font-medium text-slate-700 dark:text-slate-200 cursor-pointer">
                   Activate Bundle for Customer Purchase Immediately
                 </label>
               </div>
 
-              <div className="pt-4 border-t border-slate-800 flex justify-end gap-3">
+              <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 text-xs text-slate-400 hover:text-white"
+                  className="px-4 py-2 text-xs text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-indigo-600/30"
+                  className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-md shadow-indigo-600/20 cursor-pointer"
                 >
                   {editingPackage ? 'Update Package' : 'Create Package'}
                 </button>

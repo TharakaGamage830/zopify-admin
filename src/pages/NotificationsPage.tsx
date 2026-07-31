@@ -172,17 +172,17 @@ export const NotificationsPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-left animate-in fade-in duration-200">
       {/* Header Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-xs">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="p-2 bg-indigo-500/10 text-indigo-400 rounded-xl border border-indigo-500/20">
+            <div className="p-2 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-xl border border-indigo-500/20">
               <Bell size={22} />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white tracking-tight">Admin Broadcast Center</h1>
-              <p className="text-xs text-slate-400">
+              <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100 tracking-tight">Admin Broadcast Center</h1>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Dispatch platform notifications, promotional announcements & maintenance alerts to targeted users
               </p>
             </div>
@@ -190,26 +190,26 @@ export const NotificationsPage: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="px-3 py-1 bg-slate-800 border border-slate-700 text-slate-300 rounded-xl text-xs font-medium">
-            Active Audience Reach: <strong className="text-emerald-400">1,420 Users</strong>
+          <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-medium">
+            Active Audience Reach: <strong className="text-emerald-600 dark:text-emerald-400">1,420 Users</strong>
           </span>
         </div>
       </div>
 
       {/* Success Alert Banner */}
       {successMsg && (
-        <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 rounded-2xl text-xs font-semibold flex items-center gap-2 animate-fadeIn">
-          <CheckCircle size={18} className="text-emerald-400" />
+        <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 rounded-2xl text-xs font-semibold flex items-center gap-2 animate-fadeIn">
+          <CheckCircle size={18} className="text-emerald-600 dark:text-emerald-400" />
           <span>{successMsg}</span>
         </div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Create & Dispatch Form */}
-        <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-5">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-            <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <Send size={18} className="text-indigo-400" />
+        <div className="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-5 shadow-xs">
+          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+            <h2 className="text-base font-bold text-slate-800 dark:text-white flex items-center gap-2">
+              <Send size={18} className="text-indigo-600 dark:text-indigo-400" />
               Compose Broadcast Message
             </h2>
 
@@ -219,21 +219,21 @@ export const NotificationsPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => applyTemplate('flash_sale')}
-                className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-medium rounded-lg transition"
+                className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-medium rounded-lg transition cursor-pointer"
               >
                 Flash Sale
               </button>
               <button
                 type="button"
                 onClick={() => applyTemplate('vip_reward')}
-                className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-medium rounded-lg transition"
+                className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-medium rounded-lg transition cursor-pointer"
               >
                 VIP Reward
               </button>
               <button
                 type="button"
                 onClick={() => applyTemplate('system_alert')}
-                className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-medium rounded-lg transition"
+                className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-medium rounded-lg transition cursor-pointer"
               >
                 System Notice
               </button>
@@ -243,8 +243,8 @@ export const NotificationsPage: React.FC = () => {
           <form onSubmit={handleSendBroadcast} className="space-y-4">
             {/* Title */}
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                Broadcast Title <span className="text-rose-400">*</span>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                Broadcast Title <span className="text-rose-500">*</span>
               </label>
               <input
                 type="text"
@@ -252,20 +252,20 @@ export const NotificationsPage: React.FC = () => {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. ⚡ Exclusive Weekend Flash Sale is Live!"
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-indigo-500"
               />
             </div>
 
             {/* Type & Target Audience */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                   Notification Type
                 </label>
                 <select
                   value={noticeType}
                   onChange={(e) => setNoticeType(e.target.value as any)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 dark:text-white focus:outline-none focus:border-indigo-500"
                 >
                   <option value="promo">🎉 Promotional / Offer</option>
                   <option value="system">⚙️ System & Platform Alert</option>
@@ -275,13 +275,13 @@ export const NotificationsPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                   Target Audience Filter
                 </label>
                 <select
                   value={targetAudience}
                   onChange={(e) => setTargetAudience(e.target.value as TargetAudience)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 dark:text-white focus:outline-none focus:border-indigo-500"
                 >
                   <option value="all">🌐 All Registered Users (1,420)</option>
                   <option value="active">🛍️ Active Shoppers Last 30 Days (890)</option>
@@ -293,8 +293,8 @@ export const NotificationsPage: React.FC = () => {
 
             {/* Message Content */}
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                Message Body <span className="text-rose-400">*</span>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                Message Body <span className="text-rose-500">*</span>
               </label>
               <textarea
                 required
@@ -302,23 +302,23 @@ export const NotificationsPage: React.FC = () => {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Enter detailed message text to be delivered to user notification drawers..."
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-xs text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-indigo-500"
               />
             </div>
 
             {/* Schedule Option */}
-            <div className="p-4 bg-slate-950/60 rounded-xl border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="p-4 bg-slate-50 dark:bg-slate-950/60 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-300">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
                   Schedule Broadcast (Optional)
                 </label>
-                <p className="text-[11px] text-slate-500">Leave blank to dispatch notification immediately.</p>
+                <p className="text-[11px] text-slate-400 dark:text-slate-500">Leave blank to dispatch notification immediately.</p>
               </div>
               <input
                 type="datetime-local"
                 value={scheduledAt}
                 onChange={(e) => setScheduledAt(e.target.value)}
-                className="bg-slate-900 border border-slate-700 text-xs text-white px-3 py-1.5 rounded-lg focus:outline-none focus:border-indigo-500"
+                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs text-slate-800 dark:text-white px-3 py-1.5 rounded-lg focus:outline-none focus:border-indigo-500"
               />
             </div>
 
@@ -327,7 +327,7 @@ export const NotificationsPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={sending}
-                className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition disabled:opacity-50"
+                className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center gap-2 shadow-md shadow-indigo-600/20 transition disabled:opacity-50 cursor-pointer"
               >
                 <Send size={15} />
                 {sending ? 'Dispatching...' : scheduledAt ? 'Schedule Broadcast' : 'Send Broadcast Now'}
@@ -338,43 +338,43 @@ export const NotificationsPage: React.FC = () => {
 
         {/* Right Column: Target Audience Summary */}
         <div className="space-y-6">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
-            <h3 className="text-sm font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-3">
-              <Users size={16} className="text-indigo-400" />
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-4 shadow-xs">
+            <h3 className="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+              <Users size={16} className="text-indigo-600 dark:text-indigo-400" />
               Audience Segment Breakdown
             </h3>
 
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-slate-950/60 rounded-xl border border-slate-800">
+              <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-950/60 rounded-xl border border-slate-200 dark:border-slate-800">
                 <div className="flex items-center gap-2.5">
                   <div className="w-2.5 h-2.5 rounded-full bg-indigo-500" />
-                  <span className="text-xs text-slate-300 font-medium">All Platform Users</span>
+                  <span className="text-xs text-slate-700 dark:text-slate-300 font-medium">All Platform Users</span>
                 </div>
-                <span className="text-xs font-bold text-white">1,420</span>
+                <span className="text-xs font-bold text-slate-800 dark:text-white">1,420</span>
               </div>
 
-              <div className="flex items-center justify-between p-3 bg-slate-950/60 rounded-xl border border-slate-800">
+              <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-950/60 rounded-xl border border-slate-200 dark:border-slate-800">
                 <div className="flex items-center gap-2.5">
                   <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                  <span className="text-xs text-slate-300 font-medium">Active Shoppers (30d)</span>
+                  <span className="text-xs text-slate-700 dark:text-slate-300 font-medium">Active Shoppers (30d)</span>
                 </div>
-                <span className="text-xs font-bold text-white">890</span>
+                <span className="text-xs font-bold text-slate-800 dark:text-white">890</span>
               </div>
 
-              <div className="flex items-center justify-between p-3 bg-slate-950/60 rounded-xl border border-slate-800">
+              <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-950/60 rounded-xl border border-slate-200 dark:border-slate-800">
                 <div className="flex items-center gap-2.5">
                   <div className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-                  <span className="text-xs text-slate-300 font-medium">VIP Members</span>
+                  <span className="text-xs text-slate-700 dark:text-slate-300 font-medium">VIP Members</span>
                 </div>
-                <span className="text-xs font-bold text-white">240</span>
+                <span className="text-xs font-bold text-slate-800 dark:text-white">240</span>
               </div>
 
-              <div className="flex items-center justify-between p-3 bg-slate-950/60 rounded-xl border border-slate-800">
+              <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-950/60 rounded-xl border border-slate-200 dark:border-slate-800">
                 <div className="flex items-center gap-2.5">
                   <div className="w-2.5 h-2.5 rounded-full bg-rose-500" />
-                  <span className="text-xs text-slate-300 font-medium">Inactive Users (&gt;60d)</span>
+                  <span className="text-xs text-slate-700 dark:text-slate-300 font-medium">Inactive Users (&gt;60d)</span>
                 </div>
-                <span className="text-xs font-bold text-white">310</span>
+                <span className="text-xs font-bold text-slate-800 dark:text-white">310</span>
               </div>
             </div>
           </div>
@@ -382,20 +382,20 @@ export const NotificationsPage: React.FC = () => {
       </div>
 
       {/* Broadcast History Table Log */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-sm">
-        <div className="p-5 border-b border-slate-800 flex items-center justify-between">
-          <h3 className="text-base font-bold text-white flex items-center gap-2">
-            <History size={18} className="text-indigo-400" />
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-xs">
+        <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+          <h3 className="text-base font-bold text-slate-800 dark:text-white flex items-center gap-2">
+            <History size={18} className="text-indigo-600 dark:text-indigo-400" />
             Broadcast Dispatch Log & History ({broadcasts.length})
           </h3>
         </div>
 
         {broadcasts.length === 0 ? (
-          <div className="p-8 text-center text-slate-500 text-xs">No broadcast history recorded.</div>
+          <div className="p-8 text-center text-slate-400 dark:text-slate-500 text-xs">No broadcast history recorded.</div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] font-bold tracking-wider border-b border-slate-800">
+            <table className="w-full text-left text-xs text-slate-700 dark:text-slate-300">
+              <thead className="bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400 uppercase text-[10px] font-bold tracking-wider border-b border-slate-200 dark:border-slate-800">
                 <tr>
                   <th className="px-5 py-3">Type</th>
                   <th className="px-5 py-3">Title & Message</th>
@@ -406,17 +406,17 @@ export const NotificationsPage: React.FC = () => {
                   <th className="px-5 py-3 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60">
                 {broadcasts.map((bc) => (
-                  <tr key={bc.id} className="hover:bg-slate-800/40 transition">
+                  <tr key={bc.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
                     <td className="px-5 py-4 whitespace-nowrap">
                       <span
                         className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
                           bc.type === 'promo'
-                            ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
+                            ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20'
                             : bc.type === 'system'
-                            ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                            : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                            ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
+                            : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
                         }`}
                       >
                         {bc.type}
@@ -424,15 +424,15 @@ export const NotificationsPage: React.FC = () => {
                     </td>
 
                     <td className="px-5 py-4">
-                      <div className="font-semibold text-white max-w-sm truncate">{bc.title}</div>
-                      <div className="text-[11px] text-slate-400 max-w-sm truncate">{bc.message}</div>
+                      <div className="font-semibold text-slate-800 dark:text-white max-w-sm truncate">{bc.title}</div>
+                      <div className="text-[11px] text-slate-500 dark:text-slate-400 max-w-sm truncate">{bc.message}</div>
                     </td>
 
-                    <td className="px-5 py-4 whitespace-nowrap text-slate-300 font-medium">
+                    <td className="px-5 py-4 whitespace-nowrap text-slate-700 dark:text-slate-300 font-medium">
                       {bc.targetAudienceLabel}
                     </td>
 
-                    <td className="px-5 py-4 whitespace-nowrap font-mono text-slate-200">
+                    <td className="px-5 py-4 whitespace-nowrap font-mono text-slate-800 dark:text-slate-200">
                       {bc.recipientCount.toLocaleString()}
                     </td>
 
@@ -440,22 +440,22 @@ export const NotificationsPage: React.FC = () => {
                       <span
                         className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
                           bc.status === 'sent'
-                            ? 'bg-emerald-500/20 text-emerald-300'
-                            : 'bg-amber-500/20 text-amber-300'
+                            ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300'
+                            : 'bg-amber-500/20 text-amber-700 dark:text-amber-300'
                         }`}
                       >
                         {bc.status}
                       </span>
                     </td>
 
-                    <td className="px-5 py-4 whitespace-nowrap text-slate-400 text-[11px]">
+                    <td className="px-5 py-4 whitespace-nowrap text-slate-500 dark:text-slate-400 text-[11px]">
                       {new Date(bc.createdAt).toLocaleDateString()}
                     </td>
 
                     <td className="px-5 py-4 whitespace-nowrap text-right">
                       <button
                         onClick={() => handleDeleteBroadcast(bc.id)}
-                        className="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg hover:bg-slate-800 transition"
+                        className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
                         title="Delete log entry"
                       >
                         <Trash2 size={15} />
