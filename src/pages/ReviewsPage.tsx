@@ -3,6 +3,7 @@ import { Star, Trash2, RefreshCw, MessageSquare, Filter } from 'lucide-react';
 import { reviewServiceAPI } from '../services/reviewServiceAPI';
 import { productServiceAPI } from '../services/productServiceAPI';
 import type { Review, Product } from '../types';
+import { useAdmin } from '../context/AdminContext';
 
 export const ReviewsPage: React.FC = () => {
   const [reviews, setReviews] = useState<(Review & { productTitle?: string })[]>([]);
@@ -40,13 +41,24 @@ export const ReviewsPage: React.FC = () => {
     fetchProductsAndReviews();
   }, []);
 
+  const { showToast, requestConfirmation } = useAdmin();
+
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this customer review?')) return;
+    const confirmed = await requestConfirmation({
+      title: 'Delete Customer Review',
+      message: 'Are you sure you want to delete this product review comment?',
+      confirmText: 'Delete Review',
+      variant: 'danger',
+    });
+
+    if (!confirmed) return;
+
     try {
       await reviewServiceAPI.deleteReview(id);
       setReviews((prev) => prev.filter((r) => r.id !== id));
+      showToast('Customer review deleted successfully', 'success');
     } catch (err: any) {
-      alert(err.message || 'Failed to delete review');
+      showToast(err.message || 'Failed to delete review', 'error');
     }
   };
 

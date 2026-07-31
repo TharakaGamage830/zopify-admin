@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Truck, Plus, Trash2, Edit, RefreshCw, CheckCircle, XCircle, MapPin } from 'lucide-react';
 import { shippingServiceAPI } from '../services/shippingServiceAPI';
 import type { ShippingZone } from '../types';
+import { useAdmin } from '../context/AdminContext';
 
 export const ShippingZonesPage: React.FC = () => {
   const [zones, setZones] = useState<ShippingZone[]>([]);
@@ -69,6 +70,8 @@ export const ShippingZonesPage: React.FC = () => {
     setIsModalOpen(true);
   };
 
+  const { showToast, requestConfirmation } = useAdmin();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -90,33 +93,45 @@ export const ShippingZonesPage: React.FC = () => {
 
       if (editingZone) {
         await shippingServiceAPI.updateZone(editingZone.id, payload);
+        showToast(`Shipping zone "${name}" updated successfully!`, 'success');
       } else {
         await shippingServiceAPI.createZone(payload);
+        showToast(`New shipping zone "${name}" created successfully!`, 'success');
       }
 
       setIsModalOpen(false);
       fetchZones();
     } catch (err: any) {
-      alert(err.message || 'Failed to save shipping zone');
+      showToast(err.message || 'Failed to save shipping zone', 'error');
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this shipping zone?')) return;
+    const confirmed = await requestConfirmation({
+      title: 'Delete Shipping Zone',
+      message: 'Are you sure you want to delete this regional shipping zone?',
+      confirmText: 'Delete Zone',
+      variant: 'danger',
+    });
+
+    if (!confirmed) return;
+
     try {
       await shippingServiceAPI.deleteZone(id);
+      showToast('Shipping zone deleted successfully', 'success');
       fetchZones();
     } catch (err: any) {
-      alert(err.message || 'Failed to delete shipping zone');
+      showToast(err.message || 'Failed to delete shipping zone', 'error');
     }
   };
 
   const handleToggleActive = async (zone: ShippingZone) => {
     try {
       await shippingServiceAPI.updateZone(zone.id, { isActive: !zone.isActive });
+      showToast(`Shipping zone "${zone.name}" is now ${!zone.isActive ? 'Active' : 'Disabled'}`, 'success');
       fetchZones();
     } catch (err: any) {
-      alert(err.message || 'Failed to toggle status');
+      showToast(err.message || 'Failed to toggle status', 'error');
     }
   };
 

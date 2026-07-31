@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { Order, Product } from '../types';
+import { useAdmin } from '../context/AdminContext';
 import { Plus, X, Search, FileSpreadsheet, RefreshCcw, ArrowLeftRight } from 'lucide-react';
 
 interface PRNItem {
@@ -107,15 +108,18 @@ export const PRNPage: React.FC<PRNPageProps> = ({ orders, products, onUpdateStoc
     setCurrentQty(1);
   }, [selectedOrderId, orders]);
 
-  const handleAddItem = () => {
-    if (!currentProductId) return;
-    const orderItem = selectedOrderItems.find((i) => i.productId === currentProductId);
-    if (!orderItem) return;
+  const { showToast } = useAdmin();
 
-    // Check cap quantity
-    const maxQty = orderItem.quantity;
+  const handleAddPRNItem = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currentProductId) return;
+
+    const selectedOrder = orders.find((o) => o.id === selectedOrderId);
+    const orderItem = selectedOrder?.items?.find((i) => i.productId === currentProductId);
+    const maxQty = orderItem?.quantity || 99;
+
     if (currentQty > maxQty) {
-      alert(`Cannot return more than purchased (${maxQty} units).`);
+      showToast(`Return quantity cannot exceed purchased count (${maxQty} units).`, 'warning');
       return;
     }
 
@@ -125,7 +129,7 @@ export const PRNPage: React.FC<PRNPageProps> = ({ orders, products, onUpdateStoc
       const updated = [...prnItems];
       const newQty = updated[existingIndex].quantity + currentQty;
       if (newQty > maxQty) {
-        alert(`Total return quantity cannot exceed purchased count (${maxQty} units).`);
+        showToast(`Total return quantity cannot exceed purchased count (${maxQty} units).`, 'warning');
         return;
       }
       updated[existingIndex].quantity = newQty;
@@ -135,7 +139,7 @@ export const PRNPage: React.FC<PRNPageProps> = ({ orders, products, onUpdateStoc
         ...prnItems,
         {
           productId: currentProductId,
-          name: orderItem.product?.name || 'Selected Item',
+          name: orderItem?.product?.name || 'Selected Item',
           quantity: currentQty
         }
       ]);
@@ -152,7 +156,7 @@ export const PRNPage: React.FC<PRNPageProps> = ({ orders, products, onUpdateStoc
   const handleCreatePRN = async (e: React.FormEvent) => {
     e.preventDefault();
     if (prnItems.length === 0) {
-      alert('Please add at least one product item to return.');
+      showToast('Please add at least one product item to return.', 'warning');
       return;
     }
 
@@ -198,10 +202,10 @@ export const PRNPage: React.FC<PRNPageProps> = ({ orders, products, onUpdateStoc
       setNotes('');
       setPrnItems([]);
       setIsModalOpen(false);
-      alert(`Product Return Note ${idStr} registered successfully. Stock updated accordingly!`);
+      showToast(`Product Return Note ${idStr} registered successfully!`, 'success');
     } catch (err: any) {
       console.error(err);
-      alert('Failed to process return. Please check backend connection.');
+      showToast('Failed to process return. Please check connection.', 'error');
     } finally {
       setLoading(false);
     }
@@ -500,7 +504,7 @@ export const PRNPage: React.FC<PRNPageProps> = ({ orders, products, onUpdateStoc
                 </div>
                 <button
                   type="button"
-                  onClick={handleAddItem}
+                  onClick={handleAddPRNItem}
                   disabled={!currentProductId}
                   className="w-full flex items-center justify-center gap-1 bg-accent/10 border border-accent/20 hover:bg-accent/15 text-accent text-xs font-semibold py-1.5 px-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >

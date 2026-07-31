@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FileText, Plus, Trash2, Edit, RefreshCw, CheckCircle, XCircle, Globe } from 'lucide-react';
 import { cmsServiceAPI } from '../services/cmsServiceAPI';
 import type { CmsPage } from '../types';
+import { useAdmin } from '../context/AdminContext';
 
 export const CmsAdminPage: React.FC = () => {
   const [pages, setPages] = useState<CmsPage[]>([]);
@@ -58,6 +59,8 @@ export const CmsAdminPage: React.FC = () => {
     setIsModalOpen(true);
   };
 
+  const { showToast, requestConfirmation } = useAdmin();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -73,33 +76,45 @@ export const CmsAdminPage: React.FC = () => {
 
       if (editingPage) {
         await cmsServiceAPI.updatePage(editingPage.id, payload);
+        showToast(`CMS page "${title}" updated successfully!`, 'success');
       } else {
         await cmsServiceAPI.createPage(payload);
+        showToast(`New CMS page "${title}" created!`, 'success');
       }
 
       setIsModalOpen(false);
       fetchPages();
     } catch (err: any) {
-      alert(err.message || 'Failed to save page');
+      showToast(err.message || 'Failed to save page', 'error');
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this page content?')) return;
+    const confirmed = await requestConfirmation({
+      title: 'Delete CMS Page',
+      message: 'Are you sure you want to delete this CMS content page?',
+      confirmText: 'Delete Page',
+      variant: 'danger',
+    });
+
+    if (!confirmed) return;
+
     try {
       await cmsServiceAPI.deletePage(id);
+      showToast('CMS page deleted successfully', 'success');
       fetchPages();
     } catch (err: any) {
-      alert(err.message || 'Failed to delete page');
+      showToast(err.message || 'Failed to delete page', 'error');
     }
   };
 
   const handleTogglePublished = async (page: CmsPage) => {
     try {
       await cmsServiceAPI.updatePage(page.id, { isPublished: !page.isPublished });
+      showToast(`Page "${page.title}" is now ${!page.isPublished ? 'Published' : 'Draft'}`, 'success');
       fetchPages();
     } catch (err: any) {
-      alert(err.message || 'Failed to toggle publish status');
+      showToast(err.message || 'Failed to toggle publish status', 'error');
     }
   };
 

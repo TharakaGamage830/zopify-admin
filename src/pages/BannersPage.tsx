@@ -9,6 +9,7 @@ import {
 import type { AdBanner, PredefinedPlacement } from '../types';
 import { PlacementSketch } from '../components/PlacementSketch';
 import { AdFormModal } from '../components/AdFormModal';
+import { useAdmin } from '../context/AdminContext';
 
 export const PREDEFINED_PLACEMENTS: PredefinedPlacement[] = [
   {
@@ -160,16 +161,31 @@ export const BannersPage: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleDeleteAd = (id: string) => {
-    if (confirm('Are you sure you want to remove this ad poster?')) {
-      const filtered = ads.filter((a) => a.id !== id);
-      saveAdsToStorage(filtered);
-    }
+  const { showToast, requestConfirmation } = useAdmin();
+
+  const handleDeleteAd = async (id: string) => {
+    const confirmed = await requestConfirmation({
+      title: 'Remove Ad Poster',
+      message: 'Are you sure you want to remove this poster banner from the target placement?',
+      confirmText: 'Remove Ad',
+      variant: 'danger',
+    });
+
+    if (!confirmed) return;
+
+    const filtered = ads.filter((a) => a.id !== id);
+    saveAdsToStorage(filtered);
+    showToast('Ad poster removed successfully', 'success');
   };
 
   const handleToggleAdStatus = (id: string) => {
+    const targetAd = ads.find((a) => a.id === id);
     const updated = ads.map((a) => (a.id === id ? { ...a, isActive: !a.isActive } : a));
     saveAdsToStorage(updated);
+    showToast(
+      `Ad poster "${targetAd?.title || 'Banner'}" is now ${!targetAd?.isActive ? 'Active' : 'Disabled'}`,
+      'success'
+    );
   };
 
   const handleSaveAd = (adData: Partial<AdBanner>) => {
@@ -178,8 +194,10 @@ export const BannersPage: React.FC = () => {
     if (existingIndex >= 0) {
       updated = [...ads];
       updated[existingIndex] = { ...updated[existingIndex], ...adData } as AdBanner;
+      showToast('Ad poster updated successfully!', 'success');
     } else {
       updated = [adData as AdBanner, ...ads];
+      showToast('New ad poster added to placement!', 'success');
     }
     saveAdsToStorage(updated);
   };

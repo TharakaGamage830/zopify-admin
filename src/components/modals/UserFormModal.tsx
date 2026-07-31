@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Eye, EyeOff } from 'lucide-react';
 import type { User, UserRole } from '../../services/userServiceAPI';
+import { useAdmin } from '../../context/AdminContext';
 
 interface UserFormModalProps {
   isOpen: boolean;
@@ -48,6 +49,8 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
     setShowPassword(false);
   }, [user, isOpen, mode]);
 
+  const { showToast } = useAdmin();
+
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -61,12 +64,12 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
 
     if (form.password) {
       if (form.password.length < 6) {
-        alert('Password must be at least 6 characters long.');
+        showToast('Password must be at least 6 characters long.', 'warning');
         return;
       }
       submitData.password = form.password;
     } else if (!user) {
-      alert('Password is required for new users.');
+      showToast('Password is required for new user accounts.', 'warning');
       return;
     }
 

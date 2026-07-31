@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { Product, Category } from '../../types';
 import { X, Plus, Trash2 } from 'lucide-react';
 import { productServiceAPI } from '../../services/productServiceAPI';
+import { useAdmin } from '../../context/AdminContext';
 
 interface ProductFormModalProps {
   isOpen: boolean;
@@ -98,6 +99,8 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
     }
   }, [product, isOpen]);
 
+  const { showToast } = useAdmin();
+
   if (!isOpen) return null;
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,7 +108,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
     if (!file) return;
 
     if (form.images.length >= 4) {
-      alert('You can upload up to 4 images only.');
+      showToast('You can upload up to 4 images only.', 'warning');
       return;
     }
 
@@ -116,8 +119,9 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
         ...prev,
         images: [...prev.images, res.url],
       }));
+      showToast('Image uploaded successfully', 'success');
     } catch (err: any) {
-      alert(err.message || 'Failed to upload image');
+      showToast(err.message || 'Failed to upload image', 'error');
     } finally {
       setUploading(false);
     }
@@ -133,15 +137,15 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (slugExists) {
-      alert('This slug already exists. Please choose a unique slug.');
+      showToast('This slug already exists. Please choose a unique URL slug.', 'warning');
       return;
     }
     if (form.images.length < 2) {
-      alert('A product must have at least 2 images.');
+      showToast('A product must have at least 2 images.', 'warning');
       return;
     }
     if (form.images.length > 4) {
-      alert('A product can have at most 4 images.');
+      showToast('A product can have at most 4 images.', 'warning');
       return;
     }
     onSubmit({

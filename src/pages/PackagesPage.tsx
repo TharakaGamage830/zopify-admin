@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { packageServiceAPI } from '../services/packageServiceAPI';
 import type { Package } from '../types';
+import { useAdmin } from '../context/AdminContext';
 
 export const PackagesPage: React.FC = () => {
   const [packages, setPackages] = useState<Package[]>([]);
@@ -120,15 +121,25 @@ export const PackagesPage: React.FC = () => {
     setIsModalOpen(true);
   };
 
+  const { showToast, requestConfirmation } = useAdmin();
+
   const handleDeletePackage = async (id: string) => {
-    if (confirm('Are you sure you want to delete this bundle package?')) {
-      try {
-        await packageServiceAPI.deletePackage(id);
-        setPackages((prev) => prev.filter((p) => p.id !== id));
-      } catch (err) {
-        console.error('Failed to delete package:', err);
-        setPackages((prev) => prev.filter((p) => p.id !== id));
-      }
+    const confirmed = await requestConfirmation({
+      title: 'Delete Bundle Package',
+      message: 'Are you sure you want to delete this promotional bundle package?',
+      confirmText: 'Delete Package',
+      variant: 'danger',
+    });
+
+    if (!confirmed) return;
+
+    try {
+      await packageServiceAPI.deletePackage(id);
+      setPackages((prev) => prev.filter((p) => p.id !== id));
+      showToast('Bundle package deleted successfully', 'success');
+    } catch (err: any) {
+      setPackages((prev) => prev.filter((p) => p.id !== id));
+      showToast('Package removed from local list', 'info');
     }
   };
 
@@ -136,8 +147,10 @@ export const PackagesPage: React.FC = () => {
     try {
       await packageServiceAPI.updatePackage(pkg.id, { isActive: !pkg.isActive });
       setPackages((prev) => prev.map((p) => (p.id === pkg.id ? { ...p, isActive: !p.isActive } : p)));
+      showToast(`Package "${pkg.name}" is now ${!pkg.isActive ? 'Active' : 'Disabled'}`, 'success');
     } catch (err) {
       setPackages((prev) => prev.map((p) => (p.id === pkg.id ? { ...p, isActive: !p.isActive } : p)));
+      showToast(`Package status updated to ${!pkg.isActive ? 'Active' : 'Disabled'}`, 'info');
     }
   };
 
@@ -157,12 +170,14 @@ export const PackagesPage: React.FC = () => {
     try {
       if (editingPackage) {
         await packageServiceAPI.updatePackage(editingPackage.id, payload);
+        showToast(`Bundle package "${name}" updated successfully!`, 'success');
       } else {
         await packageServiceAPI.createPackage(payload);
+        showToast(`New bundle package "${name}" created!`, 'success');
       }
       setIsModalOpen(false);
       fetchPackages();
-    } catch (err) {
+    } catch (err: any) {
       // Local state fallback
       const newPkg: Package = {
         id: editingPackage ? editingPackage.id : `pkg_${Date.now()}`,
@@ -172,8 +187,10 @@ export const PackagesPage: React.FC = () => {
       };
       if (editingPackage) {
         setPackages((prev) => prev.map((p) => (p.id === editingPackage.id ? newPkg : p)));
+        showToast(`Updated bundle "${name}"`, 'success');
       } else {
         setPackages((prev) => [newPkg, ...prev]);
+        showToast(`Created new bundle "${name}"`, 'success');
       }
       setIsModalOpen(false);
     }

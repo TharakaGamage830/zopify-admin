@@ -254,7 +254,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLogin }) => {
                     href="#forgot"
                     onClick={(e) => {
                       e.preventDefault();
-                      alert('Please contact your System Administrator to reset staff account credentials.');
+                      if (adminContext?.showToast) {
+                        adminContext.showToast('Please contact your System Administrator to reset staff credentials.', 'info');
+                      }
                     }}
                     className="text-xs text-violet-400 hover:text-violet-300 transition-colors"
                   >

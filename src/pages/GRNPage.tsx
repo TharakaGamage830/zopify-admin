@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { Product } from '../types';
+import { useAdmin } from '../context/AdminContext';
 import { Plus, X, Search, FileText, Truck } from 'lucide-react';
 
 interface GRNItem {
@@ -117,10 +118,12 @@ export const GRNPage: React.FC<GRNPageProps> = ({ products, onUpdateStock }) => 
     setGrnItems(grnItems.filter((_, i) => i !== index));
   };
 
+  const { showToast } = useAdmin();
+
   const handleCreateGRN = async (e: React.FormEvent) => {
     e.preventDefault();
     if (grnItems.length === 0) {
-      alert('Please add at least one product item to receive.');
+      showToast('Please add at least one product item to receive.', 'warning');
       return;
     }
 
@@ -159,10 +162,10 @@ export const GRNPage: React.FC<GRNPageProps> = ({ products, onUpdateStock }) => 
       setNotes('');
       setGrnItems([]);
       setIsModalOpen(false);
-      alert(`Goods Received Note ${idStr} generated successfully and product inventory has been updated!`);
+      showToast(`Goods Received Note ${idStr} generated! Stock updated.`, 'success');
     } catch (err: any) {
       console.error(err);
-      alert('Failed to update product inventory. Please check backend connection.');
+      showToast('Failed to update product inventory. Please check connection.', 'error');
     } finally {
       setLoading(false);
     }

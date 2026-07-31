@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Tag, Plus, Trash2, RefreshCw, CheckCircle, XCircle } from 'lucide-react';
 import { couponServiceAPI } from '../services/couponServiceAPI';
 import type { Offer } from '../types';
+import { useAdmin } from '../context/AdminContext';
 
 export const OffersPage: React.FC = () => {
   const [offers, setOffers] = useState<Offer[]>([]);
@@ -44,6 +45,8 @@ export const OffersPage: React.FC = () => {
     setIsModalOpen(true);
   };
 
+  const { showToast, requestConfirmation } = useAdmin();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -58,20 +61,30 @@ export const OffersPage: React.FC = () => {
       };
 
       await couponServiceAPI.createOffer(payload);
+      showToast(`Offer rule "${name}" created successfully!`, 'success');
       setIsModalOpen(false);
       fetchOffers();
     } catch (err: any) {
-      alert(err.message || 'Failed to create offer');
+      showToast(err.message || 'Failed to create offer', 'error');
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this offer rule?')) return;
+    const confirmed = await requestConfirmation({
+      title: 'Delete Promotional Offer',
+      message: 'Are you sure you want to delete this automated promotion rule?',
+      confirmText: 'Delete Offer',
+      variant: 'danger',
+    });
+
+    if (!confirmed) return;
+
     try {
       await couponServiceAPI.deleteOffer(id);
+      showToast('Offer deleted successfully', 'success');
       fetchOffers();
     } catch (err: any) {
-      alert(err.message || 'Failed to delete offer');
+      showToast(err.message || 'Failed to delete offer', 'error');
     }
   };
 

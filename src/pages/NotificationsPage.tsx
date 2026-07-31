@@ -8,6 +8,7 @@ import {
   History,
 } from 'lucide-react';
 import type { BroadcastNotification, TargetAudience } from '../types';
+import { useAdmin } from '../context/AdminContext';
 
 export const NotificationsPage: React.FC = () => {
   const [broadcasts, setBroadcasts] = useState<BroadcastNotification[]>([]);
@@ -94,6 +95,8 @@ export const NotificationsPage: React.FC = () => {
     }
   };
 
+  const { showToast, requestConfirmation } = useAdmin();
+
   const handleSendBroadcast = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !message.trim()) return;
@@ -119,7 +122,11 @@ export const NotificationsPage: React.FC = () => {
       saveBroadcasts(updated);
 
       setSending(false);
-      setSuccessMsg(isScheduled ? 'Broadcast notification scheduled successfully!' : 'Broadcast dispatched successfully to all recipients!');
+      const msg = isScheduled
+        ? 'Broadcast notification scheduled successfully!'
+        : 'Broadcast dispatched successfully to all recipients!';
+      setSuccessMsg(msg);
+      showToast(msg, 'success');
       
       // Reset form
       setTitle('');
@@ -130,11 +137,19 @@ export const NotificationsPage: React.FC = () => {
     }, 600);
   };
 
-  const handleDeleteBroadcast = (id: string) => {
-    if (confirm('Are you sure you want to delete this broadcast log?')) {
-      const updated = broadcasts.filter((b) => b.id !== id);
-      saveBroadcasts(updated);
-    }
+  const handleDeleteBroadcast = async (id: string) => {
+    const confirmed = await requestConfirmation({
+      title: 'Delete Broadcast Notice',
+      message: 'Are you sure you want to delete this notification broadcast log entry?',
+      confirmText: 'Delete Broadcast',
+      variant: 'danger',
+    });
+
+    if (!confirmed) return;
+
+    const updated = broadcasts.filter((b) => b.id !== id);
+    saveBroadcasts(updated);
+    showToast('Broadcast notice deleted', 'success');
   };
 
   const applyTemplate = (templateType: 'flash_sale' | 'system_alert' | 'vip_reward') => {

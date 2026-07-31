@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Ticket, Plus, Trash2, Edit, RefreshCw, CheckCircle, XCircle, Percent, DollarSign } from 'lucide-react';
 import { couponServiceAPI } from '../services/couponServiceAPI';
 import type { Coupon } from '../types';
+import { useAdmin } from '../context/AdminContext';
 
 export const CouponsPage: React.FC = () => {
   const [coupons, setCoupons] = useState<Coupon[]>([]);
@@ -64,11 +65,14 @@ export const CouponsPage: React.FC = () => {
     setIsModalOpen(true);
   };
 
+  const { showToast, requestConfirmation } = useAdmin();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
       const payload = {
-        code,
+        code: code.toUpperCase().trim(),
         type,
         value: parseFloat(value),
         minOrderValue: minOrderValue ? parseFloat(minOrderValue) : undefined,
@@ -81,33 +85,45 @@ export const CouponsPage: React.FC = () => {
 
       if (editingCoupon) {
         await couponServiceAPI.updateCoupon(editingCoupon.id, payload);
+        showToast(`Coupon "${code}" updated successfully!`, 'success');
       } else {
         await couponServiceAPI.createCoupon(payload);
+        showToast(`New coupon "${code}" created successfully!`, 'success');
       }
 
       setIsModalOpen(false);
       fetchCoupons();
     } catch (err: any) {
-      alert(err.message || 'Failed to save coupon');
+      showToast(err.message || 'Failed to save coupon', 'error');
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this coupon?')) return;
+    const confirmed = await requestConfirmation({
+      title: 'Delete Discount Coupon',
+      message: 'Are you sure you want to delete this promotional coupon code?',
+      confirmText: 'Delete Coupon',
+      variant: 'danger',
+    });
+
+    if (!confirmed) return;
+
     try {
       await couponServiceAPI.deleteCoupon(id);
+      showToast('Coupon deleted successfully', 'success');
       fetchCoupons();
     } catch (err: any) {
-      alert(err.message || 'Failed to delete coupon');
+      showToast(err.message || 'Failed to delete coupon', 'error');
     }
   };
 
   const handleToggleActive = async (coupon: Coupon) => {
     try {
       await couponServiceAPI.updateCoupon(coupon.id, { isActive: !coupon.isActive });
+      showToast(`Coupon "${coupon.code}" is now ${!coupon.isActive ? 'Active' : 'Disabled'}`, 'success');
       fetchCoupons();
     } catch (err: any) {
-      alert(err.message || 'Failed to toggle status');
+      showToast(err.message || 'Failed to toggle status', 'error');
     }
   };
 

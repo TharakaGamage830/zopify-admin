@@ -7,6 +7,16 @@ import { orderServiceAPI } from '../services/orderServiceAPI';
 import { dashboardServiceAPI } from '../services/dashboardServiceAPI';
 import { userServiceAPI } from '../services/userServiceAPI';
 import type { User } from '../services/userServiceAPI';
+import { ToastContainer, type ToastItem } from '../components/ToastContainer';
+import { ConfirmModal } from '../components/ConfirmModal';
+
+export interface ConfirmOptions {
+  title: string;
+  message: string;
+  confirmText?: string;
+  cancelText?: string;
+  variant?: 'danger' | 'warning' | 'info' | 'success';
+}
 
 export interface AdminContextType {
   // Theme & User
@@ -14,6 +24,14 @@ export interface AdminContextType {
   setTheme: React.Dispatch<React.SetStateAction<'light' | 'dark'>>;
   user: any;
   setUser: React.Dispatch<React.SetStateAction<any>>;
+
+  // Toast & Alert System
+  toasts: ToastItem[];
+  showToast: (message: string, type?: 'success' | 'error' | 'info' | 'warning', title?: string) => void;
+  removeToast: (id: string) => void;
+
+  // Custom Confirmation Dialog System
+  requestConfirmation: (options: ConfirmOptions) => Promise<boolean>;
 
   // Feature Flags
   features: {
@@ -75,6 +93,60 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
   // App Navigation States
   const [user, setUser] = useState<any>(getUser());
+
+  // Toast System State
+  const [toasts, setToasts] = useState<ToastItem[]>([]);
+
+  // Confirmation Modal State
+  const [confirmModalState, setConfirmModalState] = useState<{
+    isOpen: boolean;
+    options: ConfirmOptions;
+    resolve: ((value: boolean) => void) | null;
+  }>({
+    isOpen: false,
+    options: { title: '', message: '' },
+    resolve: null,
+  });
+
+  const showToast = (
+    message: string,
+    type: 'success' | 'error' | 'info' | 'warning' = 'success',
+    title?: string
+  ) => {
+    const id = Math.random().toString(36).substring(2, 9);
+    setToasts((prev) => [...prev, { id, message, type, title }]);
+    setTimeout(() => {
+      removeToast(id);
+    }, 4000);
+  };
+
+  const removeToast = (id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  const requestConfirmation = (options: ConfirmOptions): Promise<boolean> => {
+    return new Promise((resolve) => {
+      setConfirmModalState({
+        isOpen: true,
+        options,
+        resolve,
+      });
+    });
+  };
+
+  const handleConfirmModalResponse = (confirmed: boolean) => {
+    if (confirmModalState.resolve) {
+      confirmModalState.resolve(confirmed);
+    }
+    if (!confirmed) {
+      showToast('Action cancelled', 'warning');
+    }
+    setConfirmModalState({
+      isOpen: false,
+      options: { title: '', message: '' },
+      resolve: null,
+    });
+  };
 
   // Feature support detection
   const [features, setFeatures] = useState({
@@ -138,8 +210,8 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     try {
       const res = await userServiceAPI.getUsers('customer');
       setCustomers(res);
-    } catch (e) {
-      console.error('Error fetching customers:', e);
+    } catch (e: any) {
+      showToast(e?.message || 'Network error: Failed to fetch customers list', 'error');
     }
   };
 
@@ -148,8 +220,8 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       const res = await userServiceAPI.getUsers();
       const staffRoles = ['super_admin', 'admin', 'catalog_manager', 'order_manager', 'support_agent', 'staff'];
       setAdmins(res.filter((u) => staffRoles.includes(u.role)));
-    } catch (e) {
-      console.error('Error fetching admins/staff:', e);
+    } catch (e: any) {
+      showToast(e?.message || 'Network error: Failed to fetch staff team list', 'error');
     }
   };
 
@@ -157,8 +229,8 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     try {
       const summary = await dashboardServiceAPI.getSummary();
       setDashboardSummary(summary);
-    } catch (e) {
-      console.error('Error fetching analytics dashboard:', e);
+    } catch (e: any) {
+      showToast(e?.message || 'Network error: Unable to load dashboard analytics', 'error');
     }
   };
 
@@ -166,8 +238,8 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     try {
       const res = await productServiceAPI.getProducts();
       setProducts(res.items);
-    } catch (e) {
-      console.error('Error fetching products:', e);
+    } catch (e: any) {
+      showToast(e?.message || 'Network error: Unable to load product catalog', 'error');
     }
   };
 
@@ -175,23 +247,38 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     try {
       const ords = await orderServiceAPI.getOrders();
       setOrders(ords);
-    } catch (e) {
-      console.error('Error fetching orders:', e);
+    } catch (e: any) {
+      showToast(e?.message || 'Network error: Unable to fetch customer orders', 'error');
     }
   };
 
   // Auth Action handlers
   const handleLogin = async (email: string, password: string) => {
-    const data = await authServiceAPI.login(email, password);
-    const staffRoles = ['super_admin', 'admin', 'catalog_manager', 'order_manager', 'support_agent', 'staff'];
-    if (!staffRoles.includes(data.user.role)) {
-      throw new Error('Not authorized to access the Admin Console');
+    try {
+      const data = await authServiceAPI.login(email, password);
+      const staffRoles = ['super_admin', 'admin', 'catalog_manager', 'order_manager', 'support_agent', 'staff'];
+      if (!staffRoles.includes(data.user.role)) {
+        throw new Error('Not authorized to access the Admin Console');
+      }
+      setAuth(data.accessToken, data.refreshToken, data.user);
+      setUser(data.user);
+      showToast(`Welcome back, ${data.user.fullName || 'Admin'}!`, 'success');
+    } catch (e: any) {
+      showToast(e?.message || 'Authentication failed. Please check credentials.', 'error');
+      throw e;
     }
-    setAuth(data.accessToken, data.refreshToken, data.user);
-    setUser(data.user);
   };
 
   const handleLogout = async () => {
+    const confirmed = await requestConfirmation({
+      title: 'Sign Out Confirmation',
+      message: 'Are you sure you want to log out of the Admin Console?',
+      confirmText: 'Sign Out',
+      variant: 'warning',
+    });
+
+    if (!confirmed) return;
+
     try {
       await authServiceAPI.logout(localStorage.getItem('admin_refreshToken'));
     } catch (e) {}
@@ -203,6 +290,7 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     setOrders([]);
     setCustomers([]);
     setAdmins([]);
+    showToast('Logged out successfully', 'info');
   };
 
   // User Management actions
@@ -210,10 +298,10 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     try {
       if (editingUser) {
         await userServiceAPI.updateUser(editingUser.id, formData);
-        alert('User updated successfully');
+        showToast('User account updated successfully!', 'success');
       } else {
         await userServiceAPI.createUser(formData);
-        alert('User created successfully');
+        showToast('New user created successfully!', 'success');
       }
       setIsUserModalOpen(false);
       setEditingUser(null);
@@ -221,33 +309,52 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       loadAdmins();
       loadDashboardMetrics();
     } catch (e: any) {
-      alert(e.message || 'Failed to save user');
+      showToast(e?.message || 'Failed to save user account', 'error');
     }
   };
 
   const handleDeleteUser = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this user?')) return;
+    const confirmed = await requestConfirmation({
+      title: 'Delete User Account',
+      message: 'Are you sure you want to permanently delete this user account? This action cannot be undone.',
+      confirmText: 'Delete User',
+      variant: 'danger',
+    });
+
+    if (!confirmed) return;
+
     try {
       const res = await userServiceAPI.deleteUser(id);
-      alert(res.message || 'User deleted');
+      showToast(res.message || 'User deleted successfully', 'success');
       loadCustomers();
       loadAdmins();
       loadDashboardMetrics();
     } catch (e: any) {
-      alert(e.message || 'Failed to delete user');
+      showToast(e?.message || 'Failed to delete user account', 'error');
     }
   };
 
   const handleToggleUserActive = async (targetUser: User) => {
+    const actionText = targetUser.isActive ? 'Deactivate' : 'Activate';
+    const confirmed = await requestConfirmation({
+      title: `${actionText} User Account`,
+      message: `Are you sure you want to ${actionText.toLowerCase()} user "${targetUser.fullName || targetUser.email}"?`,
+      confirmText: actionText,
+      variant: targetUser.isActive ? 'warning' : 'success',
+    });
+
+    if (!confirmed) return;
+
     try {
       await userServiceAPI.updateUser(targetUser.id, {
         isActive: !targetUser.isActive,
       });
+      showToast(`User status updated to ${!targetUser.isActive ? 'Active' : 'Deactivated'}`, 'success');
       loadCustomers();
       loadAdmins();
       loadDashboardMetrics();
     } catch (e: any) {
-      alert(e.message || 'Failed to update user status');
+      showToast(e?.message || 'Failed to update user status', 'error');
     }
   };
 
@@ -256,29 +363,37 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     try {
       if (editingProduct) {
         await productServiceAPI.updateProduct(editingProduct.id, formData);
-        alert('Product updated successfully');
+        showToast(`Product "${formData.name || editingProduct.name}" updated successfully!`, 'success');
       } else {
         await productServiceAPI.createProduct(formData);
-        alert('Product created successfully');
+        showToast(`New product "${formData.name}" created successfully!`, 'success');
       }
       setIsProductModalOpen(false);
       setEditingProduct(null);
       loadProducts();
       loadDashboardMetrics();
     } catch (e: any) {
-      alert(e.message || 'Failed to save product');
+      showToast(e?.message || 'Failed to save product details', 'error');
     }
   };
 
   const handleDeleteProduct = async (id: string) => {
-    if (!confirm('Are you sure you want to delete/deactivate this product?')) return;
+    const confirmed = await requestConfirmation({
+      title: 'Delete Product Listing',
+      message: 'Are you sure you want to delete or deactivate this product from the catalog?',
+      confirmText: 'Delete Product',
+      variant: 'danger',
+    });
+
+    if (!confirmed) return;
+
     try {
       const res = await productServiceAPI.deleteProduct(id);
-      alert(res.message || 'Product deleted');
+      showToast(res.message || 'Product deleted from catalog', 'success');
       loadProducts();
       loadDashboardMetrics();
     } catch (e: any) {
-      alert(e.message || 'Failed to delete product');
+      showToast(e?.message || 'Failed to delete product', 'error');
     }
   };
 
@@ -286,22 +401,30 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const handleCreateCategory = async (name: string, slug: string, parentId?: string) => {
     try {
       await productServiceAPI.createCategory(name, slug, parentId);
-      alert('Category created successfully');
+      showToast(`Category "${name}" created successfully!`, 'success');
       detectFeaturesAndLoad();
     } catch (e: any) {
-      alert(e.message || 'Failed to create category');
+      showToast(e?.message || 'Failed to create category', 'error');
     }
   };
 
   const handleDeleteCategory = async (id: string) => {
-    if (!confirm('Delete category? Parent associations will be unlinked.')) return;
+    const confirmed = await requestConfirmation({
+      title: 'Delete Category',
+      message: 'Are you sure you want to delete this category? Associated product parent links will be cleared.',
+      confirmText: 'Delete Category',
+      variant: 'danger',
+    });
+
+    if (!confirmed) return;
+
     try {
       await productServiceAPI.deleteCategory(id);
-      alert('Category deleted');
+      showToast('Category deleted successfully', 'success');
       detectFeaturesAndLoad();
       loadProducts();
     } catch (e: any) {
-      alert(e.message || 'Failed to delete category');
+      showToast(e?.message || 'Failed to delete category', 'error');
     }
   };
 
@@ -309,32 +432,37 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const handleUpdateOrderStatus = async (orderId: string, status: Order['status']) => {
     try {
       await orderServiceAPI.updateOrderStatus(orderId, status);
-      alert('Order status updated');
+      showToast(`Order status updated to ${status.toUpperCase()}`, 'success');
       loadOrders();
       loadDashboardMetrics();
     } catch (e: any) {
-      alert(e.message || 'Failed to update order status');
+      showToast(e?.message || 'Failed to update order status', 'error');
     }
   };
 
   const handleUpdateOrderPayment = async (orderId: string, paymentStatus: string) => {
     try {
       await orderServiceAPI.updateOrderPayment(orderId, paymentStatus);
-      alert('Payment status updated');
+      showToast(`Payment status updated to ${paymentStatus.toUpperCase()}`, 'success');
       loadOrders();
       loadDashboardMetrics();
     } catch (e: any) {
-      alert(e.message || 'Failed to update payment status');
+      showToast(e?.message || 'Failed to update payment status', 'error');
     }
   };
 
   // Stock management actions (from GRN / PRN)
   const handleUpdateStock = async (productId: string, newStock: number) => {
-    await productServiceAPI.updateProduct(productId, {
-      stockQuantity: newStock,
-    });
-    loadProducts();
-    loadDashboardMetrics();
+    try {
+      await productServiceAPI.updateProduct(productId, {
+        stockQuantity: newStock,
+      });
+      showToast(`Inventory stock quantity updated to ${newStock}`, 'success');
+      loadProducts();
+      loadDashboardMetrics();
+    } catch (e: any) {
+      showToast(e?.message || 'Failed to update stock quantity', 'error');
+    }
   };
 
   const handleToggleProductActive = async (product: Product) => {
@@ -342,10 +470,14 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       await productServiceAPI.updateProduct(product.id, {
         isActive: !product.isActive,
       });
+      showToast(
+        `Product "${product.name}" is now ${!product.isActive ? 'Active (Visible)' : 'Disabled'}`,
+        'success'
+      );
       loadProducts();
       loadDashboardMetrics();
     } catch (e: any) {
-      alert(e.message || 'Failed to toggle product status');
+      showToast(e?.message || 'Failed to toggle product status', 'error');
     }
   };
 
@@ -356,6 +488,10 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         setTheme,
         user,
         setUser,
+        toasts,
+        showToast,
+        removeToast,
+        requestConfirmation,
         features,
         dashboardSummary,
         products,
@@ -396,6 +532,20 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       }}
     >
       {children}
+      {/* Toast Alert Notification Container */}
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
+
+      {/* Customized Confirmation Popup Dialog */}
+      <ConfirmModal
+        isOpen={confirmModalState.isOpen}
+        title={confirmModalState.options.title}
+        message={confirmModalState.options.message}
+        confirmText={confirmModalState.options.confirmText}
+        cancelText={confirmModalState.options.cancelText}
+        variant={confirmModalState.options.variant}
+        onConfirm={() => handleConfirmModalResponse(true)}
+        onCancel={() => handleConfirmModalResponse(false)}
+      />
     </AdminContext.Provider>
   );
 };

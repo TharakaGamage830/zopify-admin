@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { RotateCcw, RefreshCw, CheckCircle, XCircle, Clock, AlertTriangle } from 'lucide-react';
 import { refundServiceAPI } from '../services/refundServiceAPI';
 import type { RefundRequest } from '../types';
+import { useAdmin } from '../context/AdminContext';
 
 export const RefundsPage: React.FC = () => {
   const [refunds, setRefunds] = useState<RefundRequest[]>([]);
@@ -26,8 +27,20 @@ export const RefundsPage: React.FC = () => {
     fetchRefunds();
   }, []);
 
+  const { showToast, requestConfirmation } = useAdmin();
+
   const handleUpdateStatus = async (status: 'approved' | 'rejected' | 'completed') => {
     if (!selectedRefund) return;
+
+    const confirmed = await requestConfirmation({
+      title: `Update Refund to ${status.toUpperCase()}`,
+      message: `Are you sure you want to mark this refund request as ${status}?`,
+      confirmText: `Set to ${status.toUpperCase()}`,
+      variant: status === 'rejected' ? 'danger' : 'success',
+    });
+
+    if (!confirmed) return;
+
     try {
       await refundServiceAPI.updateRefundStatus(selectedRefund.id, {
         status,
@@ -35,10 +48,11 @@ export const RefundsPage: React.FC = () => {
         refundAmount: refundAmount ? parseFloat(refundAmount) : undefined,
       });
 
+      showToast(`Refund request updated to ${status.toUpperCase()}`, 'success');
       setSelectedRefund(null);
       fetchRefunds();
     } catch (err: any) {
-      alert(err.message || 'Failed to update refund status');
+      showToast(err.message || 'Failed to update refund status', 'error');
     }
   };
 

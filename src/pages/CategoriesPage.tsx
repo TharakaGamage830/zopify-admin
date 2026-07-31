@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { Category } from '../types';
 import { Trash2, Plus } from 'lucide-react';
+import { useAdmin } from '../context/AdminContext';
 
 interface CategoriesPageProps {
   categories: Category[];
@@ -36,10 +37,12 @@ export const CategoriesPage: React.FC<CategoriesPageProps> = ({ categories, onCr
 
   const slugExists = categories.some((c) => c.slug === form.slug);
 
+  const { showToast } = useAdmin();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (slugExists) {
-      alert('This slug already exists. Please choose a unique slug.');
+      showToast('This slug already exists. Please choose a unique URL slug.', 'warning');
       return;
     }
     onCreate(form.name, form.slug, form.parentId || undefined);

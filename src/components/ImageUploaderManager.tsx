@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Upload, Trash2, ArrowLeft, ArrowRight, AlertCircle } from 'lucide-react';
 import { ImageCropModal } from './ImageCropModal';
+import { useAdmin } from '../context/AdminContext';
 
 interface ImageUploaderManagerProps {
   images: string[];
@@ -26,9 +27,11 @@ export const ImageUploaderManager: React.FC<ImageUploaderManagerProps> = ({
   const [isCropperOpen, setIsCropperOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  const { showToast, requestConfirmation } = useAdmin();
+
   const handleFileSelect = (file: File) => {
     if (!file.type.startsWith('image/')) {
-      alert('Please select a valid image file (PNG, JPG, WEBP).');
+      showToast('Please select a valid image file (PNG, JPG, WEBP).', 'warning');
       return;
     }
     const reader = new FileReader();
@@ -58,10 +61,11 @@ export const ImageUploaderManager: React.FC<ImageUploaderManagerProps> = ({
 
   const handleCropComplete = (croppedUrl: string) => {
     if (images.length >= maxImages) {
-      alert(`Maximum of ${maxImages} images allowed.`);
+      showToast(`Maximum of ${maxImages} images allowed.`, 'warning');
       return;
     }
     onChange([...images, croppedUrl]);
+    showToast('Image cropped & added successfully!', 'success');
   };
 
   const handleRemoveImage = (index: number) => {
@@ -69,10 +73,18 @@ export const ImageUploaderManager: React.FC<ImageUploaderManagerProps> = ({
     onChange(updated);
   };
 
-  const handleRemoveAll = () => {
-    if (confirm('Are you sure you want to remove all uploaded images?')) {
-      onChange([]);
-    }
+  const handleRemoveAll = async () => {
+    const confirmed = await requestConfirmation({
+      title: 'Remove All Images',
+      message: 'Are you sure you want to remove all uploaded images?',
+      confirmText: 'Remove All',
+      variant: 'danger',
+    });
+
+    if (!confirmed) return;
+
+    onChange([]);
+    showToast('All uploaded images removed', 'info');
   };
 
   const handleMove = (index: number, direction: 'left' | 'right') => {
