@@ -93,27 +93,28 @@ export const AdImageCropperModal: React.FC<AdImageCropperModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col">
+    <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col text-left animate-in zoom-in-95 duration-150 relative">
         {/* Modal Header */}
-        <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/50">
+        <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950/50">
           <div className="flex items-center gap-2">
-            <Scissors size={20} className="text-indigo-400" />
+            <Scissors size={20} className="text-indigo-600 dark:text-indigo-400" />
             <div>
-              <h3 className="text-sm font-semibold text-white">Crop & Format Ad Poster Asset</h3>
-              <p className="text-xs text-slate-400">{specs.label} • Recommended Resolution: {specs.width} x {specs.height} px</p>
+              <h3 className="text-sm font-semibold text-slate-800 dark:text-white">Crop & Format Ad Poster Asset</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{specs.label} • Recommended Resolution: {specs.width} x {specs.height} px</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"
+            className="p-1.5 text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition cursor-pointer"
+            title="Close modal"
           >
             <X size={18} />
           </button>
         </div>
 
         {/* Cropping Canvas Viewport */}
-        <div className="p-6 flex flex-col items-center justify-center bg-slate-950/80">
+        <div className="p-6 flex flex-col items-center justify-center bg-slate-100 dark:bg-slate-950/80">
           <div
             ref={containerRef}
             onMouseDown={handleMouseDown}
@@ -139,7 +140,7 @@ export const AdImageCropperModal: React.FC<AdImageCropperModalProps> = ({
           </div>
 
           {/* Controls Bar */}
-          <div className="flex items-center gap-6 mt-6 bg-slate-900/90 border border-slate-800 px-6 py-3 rounded-xl w-full max-w-lg justify-between">
+          <div className="flex items-center gap-6 mt-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-6 py-3 rounded-xl w-full max-w-lg justify-between shadow-xs">
             <div className="flex items-center gap-3">
               <ZoomOut size={16} className="text-slate-400" />
               <input
@@ -156,7 +157,7 @@ export const AdImageCropperModal: React.FC<AdImageCropperModalProps> = ({
 
             <button
               onClick={() => setRotation((r) => (r + 90) % 360)}
-              className="flex items-center gap-1.5 text-xs text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg transition"
+              className="flex items-center gap-1.5 text-xs text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-3 py-1.5 rounded-lg transition cursor-pointer"
             >
               <RotateCw size={14} />
               Rotate ({rotation}°)
@@ -165,16 +166,16 @@ export const AdImageCropperModal: React.FC<AdImageCropperModalProps> = ({
         </div>
 
         {/* Modal Actions */}
-        <div className="p-4 border-t border-slate-800 flex justify-end gap-3 bg-slate-950/50">
+        <div className="p-4 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3 bg-slate-50 dark:bg-slate-950/50">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white rounded-lg transition"
+            className="px-4 py-2 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-lg transition cursor-pointer"
           >
             Cancel
           </button>
           <button
             onClick={handleSaveCrop}
-            className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-indigo-600/30 transition"
+            className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-indigo-600/20 transition cursor-pointer"
           >
             <Check size={16} />
             Apply Cropped Image

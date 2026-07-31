@@ -4,13 +4,14 @@ import {
   Plus,
   Trash2,
   Edit,
-  XCircle,
+  X,
   RefreshCw,
   Search,
 } from 'lucide-react';
 import { packageServiceAPI } from '../services/packageServiceAPI';
 import type { Package } from '../types';
 import { useAdmin } from '../context/AdminContext';
+import { ImageUploaderManager } from '../components/ImageUploaderManager';
 
 export const PackagesPage: React.FC = () => {
   const [packages, setPackages] = useState<Package[]>([]);
@@ -371,13 +372,14 @@ export const PackagesPage: React.FC = () => {
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-1 text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-lg transition cursor-pointer"
+                className="p-1.5 text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-lg transition cursor-pointer"
+                title="Close modal"
               >
-                <XCircle size={18} />
+                <X size={18} />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto max-h-[80vh] scroll-smooth">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Package Name</label>
                 <input
@@ -450,14 +452,14 @@ export const PackagesPage: React.FC = () => {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Cover Image URL</label>
-                <input
-                  type="text"
-                  value={images[0] || ''}
-                  onChange={(e) => setImages([e.target.value])}
-                  placeholder="https://images.unsplash.com/..."
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3.5 py-2 text-xs text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-indigo-500"
+              {/* Multi-Image File Selection & Drag & Drop Upload (Up to 5 images) */}
+              <div className="pt-2">
+                <ImageUploaderManager
+                  images={images}
+                  onChange={setImages}
+                  maxImages={5}
+                  minImages={1}
+                  label="Package Bundle Images (Up to 5)"
                 />
               </div>
 
