@@ -1,7 +1,7 @@
 /**
  * ConfirmModal Component
- * Customized Confirmation Dialog Popup Modal for Zopify Admin Console.
- * Replaces native browser confirm() popups with branded glassmorphism dialogs.
+ * Minimalist Two-Tone Confirmation Dialog Popup Modal for Zopify Admin Console.
+ * Clean, high-contrast prompt modal replacing native browser confirm() dialogs.
  */
 import React, { useEffect } from 'react';
 import { AlertTriangle, AlertCircle, Info, CheckCircle2, X } from 'lucide-react';
@@ -54,68 +54,67 @@ export const ConfirmModal: React.FC<ConfirmModalOptions> = ({
 
   return (
     <div
-      className="fixed inset-0 z-[99999] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-200"
+      className="fixed inset-0 z-[99999] bg-slate-950/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-150"
       onClick={onCancel}
     >
       <div
-        className="bg-cardbg border border-border rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl relative animate-in zoom-in-95 duration-200 text-left space-y-6"
+        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl relative animate-in zoom-in-95 duration-150 text-left space-y-5"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
         <button
           onClick={onCancel}
-          className="absolute top-4 right-4 p-1.5 rounded-xl text-secondary-muted hover:text-heading hover:bg-accent-bg transition cursor-pointer"
+          className="absolute top-4 right-4 p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
           title="Cancel action"
         >
-          <X size={18} />
+          <X size={16} />
         </button>
 
         {/* Modal Header */}
-        <div className="flex items-start gap-4">
+        <div className="flex items-start gap-3.5 pr-6">
           <div
-            className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border ${
+            className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border text-slate-800 dark:text-slate-100 ${
               isDanger
-                ? 'bg-rose-500/10 text-rose-500 border-rose-500/20'
+                ? 'bg-rose-500/10 border-rose-500/20 text-rose-600 dark:text-rose-400'
                 : isWarning
-                ? 'bg-amber-500/10 text-amber-500 border-amber-500/20'
+                ? 'bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400'
                 : isSuccess
-                ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
-                : 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20'
+                ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
+                : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700'
             }`}
           >
-            {isDanger && <AlertCircle size={24} />}
-            {isWarning && <AlertTriangle size={24} />}
-            {isSuccess && <CheckCircle2 size={24} />}
-            {!isDanger && !isWarning && !isSuccess && <Info size={24} />}
+            {isDanger && <AlertCircle size={18} />}
+            {isWarning && <AlertTriangle size={18} />}
+            {isSuccess && <CheckCircle2 size={18} />}
+            {!isDanger && !isWarning && !isSuccess && <Info size={18} />}
           </div>
 
-          <div className="space-y-1 pr-4">
-            <h3 className="text-lg font-extrabold text-heading leading-snug">{title}</h3>
-            <p className="text-xs text-secondary-muted leading-relaxed">{message}</p>
+          <div className="space-y-1">
+            <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-snug">
+              {title}
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+              {message}
+            </p>
           </div>
         </div>
 
-        {/* Modal Action Buttons */}
-        <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
+        {/* Action Buttons - Two Tone */}
+        <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800/80">
           <button
             type="button"
             onClick={onCancel}
-            className="btn btn-secondary py-2.5 px-5 text-xs font-bold rounded-xl cursor-pointer"
+            className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200/60 dark:border-slate-700/60 transition cursor-pointer"
           >
             {cancelText}
           </button>
-
           <button
             type="button"
             onClick={onConfirm}
-            className={`py-2.5 px-6 text-xs font-bold rounded-xl shadow-md transition cursor-pointer ${
+            className={`px-4 py-2 rounded-xl text-xs font-semibold transition cursor-pointer shadow-xs ${
               isDanger
-                ? 'bg-rose-600 hover:bg-rose-700 text-white'
-                : isWarning
-                ? 'bg-amber-600 hover:bg-amber-700 text-white'
-                : isSuccess
-                ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                : 'btn btn-primary'
+                ? 'bg-rose-600 hover:bg-rose-500 text-white'
+                : 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200'
             }`}
           >
             {confirmText}

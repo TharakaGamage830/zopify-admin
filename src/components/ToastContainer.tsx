@@ -1,7 +1,7 @@
 /**
  * ToastContainer Component
- * Modern Toastify Alert Notification Container for Zopify Admin Console.
- * Renders rich floating alert messages for Success, Error / Network Failures, Information, and Warning / Cancelled actions.
+ * Minimalist Two-Tone Toast Notification Container for Zopify Admin Console.
+ * Displays clean, high-contrast floating alerts with status color indicators.
  */
 import React from 'react';
 import { CheckCircle2, AlertCircle, Info, AlertTriangle, X } from 'lucide-react';
@@ -25,7 +25,7 @@ export const ToastContainer: React.FC<ToastContainerProps> = ({ toasts, onRemove
     <div
       aria-live="polite"
       aria-atomic="true"
-      className="fixed top-5 right-5 z-[9999] flex flex-col gap-3 max-w-md w-full pointer-events-none px-4 sm:px-0"
+      className="fixed top-5 right-5 z-[9999] flex flex-col gap-2.5 max-w-sm w-full pointer-events-none px-4 sm:px-0"
     >
       {toasts.map((toast) => {
         const isSuccess = toast.type === 'success';
@@ -33,49 +33,59 @@ export const ToastContainer: React.FC<ToastContainerProps> = ({ toasts, onRemove
         const isWarning = toast.type === 'warning';
         const isInfo = toast.type === 'info';
 
+        const accentBorder = isSuccess
+          ? 'border-l-emerald-500'
+          : isError
+          ? 'border-l-rose-500'
+          : isWarning
+          ? 'border-l-amber-500'
+          : 'border-l-indigo-500';
+
+        const iconColor = isSuccess
+          ? 'text-emerald-500'
+          : isError
+          ? 'text-rose-500'
+          : isWarning
+          ? 'text-amber-500'
+          : 'text-indigo-500';
+
         return (
           <div
             key={toast.id}
-            className={`pointer-events-auto flex items-start gap-3 p-4 rounded-2xl border shadow-xl backdrop-blur-md transition-all duration-300 animate-in slide-in-from-top-4 fade-in ${
-              isSuccess
-                ? 'bg-emerald-950/90 dark:bg-emerald-950/95 border-emerald-500/40 text-emerald-100 shadow-emerald-950/30'
-                : isError
-                ? 'bg-rose-950/90 dark:bg-rose-950/95 border-rose-500/40 text-rose-100 shadow-rose-950/30'
-                : isWarning
-                ? 'bg-amber-950/90 dark:bg-amber-950/95 border-amber-500/40 text-amber-100 shadow-amber-950/30'
-                : 'bg-slate-900/90 dark:bg-slate-900/95 border-indigo-500/40 text-slate-100 shadow-slate-950/30'
-            }`}
+            className={`pointer-events-auto flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 border-l-4 ${accentBorder} bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 shadow-lg shadow-slate-900/5 dark:shadow-slate-950/50 transition-all duration-300 animate-in slide-in-from-top-3 fade-in`}
           >
-            {/* Icon */}
-            <div className="shrink-0 pt-0.5">
-              {isSuccess && <CheckCircle2 size={20} className="text-emerald-400" />}
-              {isError && <AlertCircle size={20} className="text-rose-400" />}
-              {isWarning && <AlertTriangle size={20} className="text-amber-400" />}
-              {isInfo && <Info size={20} className="text-indigo-400" />}
+            {/* Minimal Status Icon */}
+            <div className={`shrink-0 pt-0.5 ${iconColor}`}>
+              {isSuccess && <CheckCircle2 size={18} />}
+              {isError && <AlertCircle size={18} />}
+              {isWarning && <AlertTriangle size={18} />}
+              {isInfo && <Info size={18} />}
             </div>
 
             {/* Content */}
-            <div className="flex-1 space-y-0.5 text-left">
-              <h4 className="text-xs font-extrabold uppercase tracking-wider opacity-90">
+            <div className="flex-1 space-y-0.5 text-left min-w-0">
+              <h4 className="text-xs font-bold tracking-tight text-slate-900 dark:text-slate-100">
                 {toast.title ||
                   (isSuccess
                     ? 'Success'
                     : isError
-                    ? 'Error / Network Alert'
+                    ? 'Error Alert'
                     : isWarning
-                    ? 'Action Cancelled'
-                    : 'System Notice')}
+                    ? 'Notice'
+                    : 'System Alert')}
               </h4>
-              <p className="text-xs font-medium leading-relaxed break-words">{toast.message}</p>
+              <p className="text-[11px] text-slate-600 dark:text-slate-400 font-medium leading-relaxed break-words">
+                {toast.message}
+              </p>
             </div>
 
             {/* Close Button */}
             <button
               onClick={() => onRemove(toast.id)}
-              className="shrink-0 p-1 text-slate-400 hover:text-white rounded-lg transition cursor-pointer"
+              className="shrink-0 p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
               title="Dismiss notification"
             >
-              <X size={15} />
+              <X size={14} />
             </button>
           </div>
         );
