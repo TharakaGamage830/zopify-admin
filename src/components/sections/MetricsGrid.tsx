@@ -9,7 +9,7 @@ interface MetricsGridProps {
 
 export const MetricsGrid: React.FC<MetricsGridProps> = ({ revenue, orderCount, productCount }) => {
   const stats = [
-    { label: 'Total Revenue', value: `$${revenue.toFixed(2)}`, icon: DollarSign, color: 'text-emerald-500 bg-emerald-50 dark:bg-emerald-950/20' },
+    { label: 'Total Revenue', value: `Rs. ${revenue.toLocaleString('en-LK', { minimumFractionDigits: 2 })}`, icon: DollarSign, color: 'text-emerald-500 bg-emerald-50 dark:bg-emerald-950/20' },
     { label: 'Orders Logged', value: orderCount, icon: Clipboard, color: 'text-blue-500 bg-blue-50 dark:bg-blue-950/20' },
     { label: 'Products Tracked', value: productCount, icon: Package, color: 'text-purple-500 bg-purple-50 dark:bg-purple-950/20' },
   ];

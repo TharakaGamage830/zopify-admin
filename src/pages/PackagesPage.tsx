@@ -284,7 +284,7 @@ export const PackagesPage: React.FC = () => {
                         <p className="text-[11px] text-slate-300 font-mono">/{pkg.slug}</p>
                       </div>
                       <div className="text-right">
-                        <span className="text-lg font-extrabold text-indigo-400">${pkg.price}</span>
+                        <span className="text-lg font-extrabold text-indigo-400">Rs. {Number(pkg.price).toLocaleString()}</span>
                       </div>
                     </div>
                   </div>
@@ -301,7 +301,7 @@ export const PackagesPage: React.FC = () => {
                         <span className="font-semibold text-white capitalize">
                           {pkg.addonLimitType === 'count'
                             ? `${pkg.addonLimitValue} Products Max`
-                            : `$${pkg.addonLimitValue} Value Cap`}
+                            : `Rs. ${Number(pkg.addonLimitValue).toLocaleString()} Value Cap`}
                         </span>
                       </div>
                     </div>
@@ -385,14 +385,14 @@ export const PackagesPage: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Bundle Price ($)</label>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Bundle Price (LKR)</label>
                   <input
                     type="number"
                     step="0.01"
                     required
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
-                    placeholder="49.99"
+                    placeholder="4999.00"
                     className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                   />
                 </div>
@@ -418,7 +418,7 @@ export const PackagesPage: React.FC = () => {
                     className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
                   >
                     <option value="count">Item Count Limit</option>
-                    <option value="amount">Dollar Amount Limit</option>
+                    <option value="amount">Rupee Amount Limit (LKR)</option>
                   </select>
                 </div>
 

@@ -33,7 +33,7 @@ export const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateStatus
                   <div className="text-xs text-slate-400 dark:text-slate-500">{o.user?.email}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-900 dark:text-slate-100">
-                  ${parseFloat(o.totalAmount).toFixed(2)}
+                  Rs. {parseFloat(o.totalAmount).toLocaleString('en-LK', { minimumFractionDigits: 2 })}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
                   {new Date(o.createdAt).toLocaleString()}

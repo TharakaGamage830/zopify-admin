@@ -208,7 +208,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Price ($)</label>
+              <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">Price (LKR)</label>
               <input
                 type="number"
                 step="0.01"

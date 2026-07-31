@@ -150,7 +150,7 @@ export const NotificationsPage: React.FC = () => {
       setTargetAudience('all');
     } else if (templateType === 'vip_reward') {
       setTitle('💎 VIP Reward Voucher Inside');
-      setMessage('As a valued VIP member, here is your $15 discount coupon for your next purchase!');
+      setMessage('As a valued VIP member, here is your Rs. 1,500 discount coupon for your next purchase!');
       setNoticeType('promo');
       setTargetAudience('vip');
     }

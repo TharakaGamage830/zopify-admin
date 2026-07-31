@@ -31,7 +31,7 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({ products, onEdit, 
                   <div className="text-xs text-slate-400 dark:text-slate-500">slug: {p.slug}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-900 dark:text-slate-100">
-                  ${parseFloat(p.price).toFixed(2)}
+                  Rs. {parseFloat(p.price).toLocaleString('en-LK', { minimumFractionDigits: 2 })}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
                   {p.stockQuantity}
