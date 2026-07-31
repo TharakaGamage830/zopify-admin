@@ -394,8 +394,18 @@ export const PRNPage: React.FC<PRNPageProps> = ({ orders, products, onUpdateStoc
 
       {/* Return Note Form Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-cardbg-dark border border-slate-200 dark:border-slate-800 rounded-xl shadow-lg w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-150 text-left">
+        <div
+          className="fixed inset-0 z-[9999] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 overscroll-contain animate-in fade-in duration-150"
+          onClick={() => {
+            setIsModalOpen(false);
+            setPrnItems([]);
+            setSelectedOrderId('');
+          }}
+        >
+          <div
+            className="bg-white dark:bg-cardbg-dark border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-150 text-left relative"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800">
               <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
                 <RefreshCcw size={18} className="text-accent" />

@@ -364,8 +364,14 @@ export const PackagesPage: React.FC = () => {
 
       {/* Modal for Create/Edit Package */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl flex flex-col text-left">
+        <div
+          className="fixed inset-0 z-[9999] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 overscroll-contain animate-in fade-in duration-150"
+          onClick={() => setIsModalOpen(false)}
+        >
+          <div
+            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl flex flex-col text-left relative animate-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950/40">
               <h3 className="text-base font-semibold text-slate-800 dark:text-white">
                 {editingPackage ? 'Edit Bundle Package' : 'Create New Bundle Package'}

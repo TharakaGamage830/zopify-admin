@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Ticket, Plus, Trash2, Edit, RefreshCw, CheckCircle, XCircle, Percent, DollarSign } from 'lucide-react';
+import { Ticket, Plus, Trash2, Edit, RefreshCw, CheckCircle, XCircle, Percent, DollarSign, X } from 'lucide-react';
 import { couponServiceAPI } from '../services/couponServiceAPI';
 import type { Coupon } from '../types';
 import { useAdmin } from '../context/AdminContext';
@@ -249,11 +249,27 @@ export const CouponsPage: React.FC = () => {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white dark:bg-cardbg-dark border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl max-w-md w-full p-6 space-y-4 text-left">
-            <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200">
-              {editingCoupon ? 'Edit Coupon' : 'Create New Coupon'}
-            </h2>
+        <div
+          className="fixed inset-0 z-[9999] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 overscroll-contain animate-in fade-in duration-150"
+          onClick={() => setIsModalOpen(false)}
+        >
+          <div
+            className="bg-white dark:bg-cardbg-dark border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl max-w-md w-full p-6 space-y-4 text-left relative animate-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+              <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200">
+                {editingCoupon ? 'Edit Coupon' : 'Create New Coupon'}
+              </h2>
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-lg transition cursor-pointer"
+                title="Close modal"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
             <form onSubmit={handleSubmit} className="space-y-3 text-xs">
               <div>
                 <label className="block font-medium text-slate-700 dark:text-slate-300 mb-1">Coupon Code *</label>

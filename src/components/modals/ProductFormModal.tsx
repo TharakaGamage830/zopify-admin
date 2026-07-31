@@ -156,8 +156,14 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-cardbg-dark border border-slate-200 dark:border-slate-800 rounded-xl shadow-lg w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col text-left animate-in fade-in zoom-in-95 duration-150">
+    <div
+      className="fixed inset-0 z-[9999] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 overscroll-contain animate-in fade-in duration-150"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white dark:bg-cardbg-dark border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col text-left relative animate-in zoom-in-95 duration-150"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Modal Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800 shrink-0">
           <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200">
