@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import type { Order, Product } from '../types';
 import { useAdmin } from '../context/AdminContext';
 import { Plus, X, Search, FileSpreadsheet, RefreshCcw, ArrowLeftRight } from 'lucide-react';
@@ -393,7 +394,7 @@ export const PRNPage: React.FC<PRNPageProps> = ({ orders, products, onUpdateStoc
       )}
 
       {/* Return Note Form Modal */}
-      {isModalOpen && (
+      {isModalOpen && ReactDOM.createPortal(
         <div
           className="fixed inset-0 z-[9999] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 overscroll-contain animate-in fade-in duration-150"
           onClick={() => {
@@ -573,7 +574,8 @@ export const PRNPage: React.FC<PRNPageProps> = ({ orders, products, onUpdateStoc
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { X, User, Settings, Camera, Mail, Calendar, Shield, Eye, EyeOff } from 'lucide-react';
 import { userServiceAPI } from '../../services/userServiceAPI';
 
@@ -129,7 +130,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
     ? user.fullName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)
     : 'U';
 
-  return (
+  return ReactDOM.createPortal(
     <div
       className="fixed inset-0 z-[9999] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 overscroll-contain animate-in fade-in duration-150"
       onClick={onClose}
@@ -368,6 +369,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

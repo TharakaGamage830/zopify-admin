@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import { Scissors, Check, X, RotateCw, ZoomIn, ZoomOut } from 'lucide-react';
 import type { PlacementKey } from '../types';
 
@@ -92,7 +93,7 @@ export const AdImageCropperModal: React.FC<AdImageCropperModalProps> = ({
     img.src = imageUrl;
   };
 
-  return (
+  return ReactDOM.createPortal(
     <div
       className="fixed inset-0 z-[9999] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 overscroll-contain animate-in fade-in duration-150"
       onClick={onClose}
@@ -188,6 +189,7 @@ export const AdImageCropperModal: React.FC<AdImageCropperModalProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

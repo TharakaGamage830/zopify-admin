@@ -6,9 +6,11 @@ import {
   CheckCircle,
   Trash2,
   History,
+  RefreshCw,
 } from 'lucide-react';
 import type { BroadcastNotification, TargetAudience } from '../types';
 import { useAdmin } from '../context/AdminContext';
+import { broadcastServiceAPI } from '../services/broadcastServiceAPI';
 
 export const NotificationsPage: React.FC = () => {
   const [broadcasts, setBroadcasts] = useState<BroadcastNotification[]>([]);
@@ -18,67 +20,24 @@ export const NotificationsPage: React.FC = () => {
   const [targetAudience, setTargetAudience] = useState<TargetAudience>('all');
   const [scheduledAt, setScheduledAt] = useState('');
   const [sending, setSending] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [successMsg, setSuccessMsg] = useState('');
 
-  // Initial broadcast history samples
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = localStorage.getItem('zopify_admin_broadcasts');
-        if (saved) {
-          setBroadcasts(JSON.parse(saved));
-        } else {
-          const sampleBroadcasts: BroadcastNotification[] = [
-            {
-              id: 'bc_1',
-              title: '⚡ Weekend Flash Sale 40% OFF All Accessories',
-              message: 'Use code FLASH40 at checkout to unlock exclusive discount prices across all item categories!',
-              type: 'promo',
-              targetAudience: 'all',
-              targetAudienceLabel: 'All Users (1,420 users)',
-              scheduledAt: null,
-              status: 'sent',
-              recipientCount: 1420,
-              createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-            },
-            {
-              id: 'bc_2',
-              title: '👑 VIP Premium Perk: Double Points Weekend',
-              message: 'Exclusive benefit for VIP subscribers! Earn double loyalty points on every purchase made this weekend.',
-              type: 'promo',
-              targetAudience: 'vip',
-              targetAudienceLabel: 'VIP Subscribers (240 users)',
-              scheduledAt: null,
-              status: 'sent',
-              recipientCount: 240,
-              createdAt: new Date(Date.now() - 86400000 * 5).toISOString(),
-            },
-            {
-              id: 'bc_3',
-              title: '🔒 Scheduled Security & System Maintenance',
-              message: 'Zopify platform will undergo scheduled maintenance tonight at 02:00 UTC. System services will remain uninterrupted.',
-              type: 'system',
-              targetAudience: 'all',
-              targetAudienceLabel: 'All Users',
-              scheduledAt: new Date(Date.now() + 86400000).toISOString(),
-              status: 'scheduled',
-              recipientCount: 1420,
-              createdAt: new Date().toISOString(),
-            },
-          ];
-          setBroadcasts(sampleBroadcasts);
-          localStorage.setItem('zopify_admin_broadcasts', JSON.stringify(sampleBroadcasts));
-        }
-      } catch (e) {}
-    }
-  }, []);
-
-  const saveBroadcasts = (newLogs: BroadcastNotification[]) => {
-    setBroadcasts(newLogs);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('zopify_admin_broadcasts', JSON.stringify(newLogs));
+  const fetchBroadcasts = async () => {
+    setLoading(true);
+    try {
+      const data = await broadcastServiceAPI.getAll();
+      setBroadcasts(Array.isArray(data) ? data : []);
+    } catch (e: any) {
+      console.error('Failed to load broadcasts:', e);
+    } finally {
+      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchBroadcasts();
+  }, []);
 
   const getTargetAudienceLabel = (audience: TargetAudience) => {
     switch (audience) {
@@ -97,31 +56,25 @@ export const NotificationsPage: React.FC = () => {
 
   const { showToast, requestConfirmation } = useAdmin();
 
-  const handleSendBroadcast = (e: React.FormEvent) => {
+  const handleSendBroadcast = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !message.trim()) return;
 
     setSending(true);
 
-    setTimeout(() => {
+    try {
       const isScheduled = !!scheduledAt;
-      const newBroadcast: BroadcastNotification = {
-        id: `bc_${Date.now()}`,
+      await broadcastServiceAPI.create({
         title,
         message,
         type: noticeType,
         targetAudience,
         targetAudienceLabel: getTargetAudienceLabel(targetAudience),
         scheduledAt: isScheduled ? new Date(scheduledAt).toISOString() : null,
-        status: isScheduled ? 'scheduled' : 'sent',
-        recipientCount: targetAudience === 'vip' ? 240 : targetAudience === 'inactive' ? 310 : 1420,
-        createdAt: new Date().toISOString(),
-      };
+      });
 
-      const updated = [newBroadcast, ...broadcasts];
-      saveBroadcasts(updated);
+      await fetchBroadcasts();
 
-      setSending(false);
       const msg = isScheduled
         ? 'Broadcast notification scheduled successfully!'
         : 'Broadcast dispatched successfully to all recipients!';
@@ -134,7 +87,11 @@ export const NotificationsPage: React.FC = () => {
       setScheduledAt('');
 
       setTimeout(() => setSuccessMsg(''), 4000);
-    }, 600);
+    } catch (err: any) {
+      showToast(err.message || 'Failed to dispatch broadcast', 'error');
+    } finally {
+      setSending(false);
+    }
   };
 
   const handleDeleteBroadcast = async (id: string) => {
@@ -147,9 +104,13 @@ export const NotificationsPage: React.FC = () => {
 
     if (!confirmed) return;
 
-    const updated = broadcasts.filter((b) => b.id !== id);
-    saveBroadcasts(updated);
-    showToast('Broadcast notice deleted', 'success');
+    try {
+      await broadcastServiceAPI.delete(id);
+      setBroadcasts((prev) => prev.filter((b) => b.id !== id));
+      showToast('Broadcast notice deleted', 'success');
+    } catch (err: any) {
+      showToast(err.message || 'Failed to delete broadcast', 'error');
+    }
   };
 
   const applyTemplate = (templateType: 'flash_sale' | 'system_alert' | 'vip_reward') => {
@@ -190,6 +151,14 @@ export const NotificationsPage: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            onClick={fetchBroadcasts}
+            disabled={loading}
+            className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-xl transition shadow-xs cursor-pointer"
+            title="Refresh Broadcasts"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
           <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-medium">
             Active Audience Reach: <strong className="text-emerald-600 dark:text-emerald-400">1,420 Users</strong>
           </span>

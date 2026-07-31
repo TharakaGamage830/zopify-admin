@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { X, Scissors, Sparkles, Search, ExternalLink } from 'lucide-react';
 import type { AdBanner, PredefinedPlacement } from '../types';
 import { AdImageCropperModal } from './AdImageCropperModal';
@@ -102,7 +103,7 @@ export const AdFormModal: React.FC<AdFormModalProps> = ({
       r.category.toLowerCase().includes(routeSearch.toLowerCase())
   );
 
-  return (
+  return ReactDOM.createPortal(
     <>
       <div
         className="fixed inset-0 z-[9999] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 overscroll-contain animate-in fade-in duration-150"
@@ -379,6 +380,7 @@ export const AdFormModal: React.FC<AdFormModalProps> = ({
         placementKey={placement.key}
         onCropComplete={(croppedDataUrl) => setImageUrl(croppedDataUrl)}
       />
-    </>
+    </>,
+    document.body
   );
 };

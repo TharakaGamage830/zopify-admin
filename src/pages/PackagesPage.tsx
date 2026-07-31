@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import {
   Package as PackageIcon,
   Plus,
@@ -363,7 +364,7 @@ export const PackagesPage: React.FC = () => {
       )}
 
       {/* Modal for Create/Edit Package */}
-      {isModalOpen && (
+      {isModalOpen && ReactDOM.createPortal(
         <div
           className="fixed inset-0 z-[9999] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 overscroll-contain animate-in fade-in duration-150"
           onClick={() => setIsModalOpen(false)}
@@ -499,7 +500,8 @@ export const PackagesPage: React.FC = () => {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

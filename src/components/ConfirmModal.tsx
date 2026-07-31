@@ -4,6 +4,7 @@
  * Clean, high-contrast prompt modal replacing native browser confirm() dialogs.
  */
 import React, { useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { AlertTriangle, AlertCircle, Info, CheckCircle2, X } from 'lucide-react';
 
 export interface ConfirmModalOptions {
@@ -52,7 +53,7 @@ export const ConfirmModal: React.FC<ConfirmModalOptions> = ({
   const isWarning = variant === 'warning';
   const isSuccess = variant === 'success';
 
-  return (
+  return ReactDOM.createPortal(
     <div
       className="fixed inset-0 z-[99999] bg-slate-950/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-150"
       onClick={onCancel}
@@ -121,6 +122,7 @@ export const ConfirmModal: React.FC<ConfirmModalOptions> = ({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

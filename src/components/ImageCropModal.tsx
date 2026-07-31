@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { Crop, ZoomIn, ZoomOut, RotateCcw, Check, X } from 'lucide-react';
 
 interface ImageCropModalProps {
@@ -108,7 +109,7 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
 
   if (!isOpen) return null;
 
-  return (
+  return ReactDOM.createPortal(
     <div
       className="fixed inset-0 z-[9999] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 overscroll-contain animate-in fade-in duration-200"
       onClick={onClose}
@@ -212,6 +213,7 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
         </div>
 
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

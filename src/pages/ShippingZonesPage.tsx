@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { Truck, Plus, Trash2, Edit, RefreshCw, CheckCircle, XCircle, MapPin, X } from 'lucide-react';
 import { shippingServiceAPI } from '../services/shippingServiceAPI';
 import type { ShippingZone } from '../types';
@@ -262,7 +263,7 @@ export const ShippingZonesPage: React.FC = () => {
       </div>
 
       {/* Modal */}
-      {isModalOpen && (
+      {isModalOpen && ReactDOM.createPortal(
         <div
           className="fixed inset-0 z-[9999] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 overscroll-contain animate-in fade-in duration-150"
           onClick={() => setIsModalOpen(false)}
@@ -400,7 +401,8 @@ export const ShippingZonesPage: React.FC = () => {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

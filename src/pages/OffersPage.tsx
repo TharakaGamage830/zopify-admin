@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { Tag, Plus, Trash2, RefreshCw, CheckCircle, XCircle, X } from 'lucide-react';
 import { couponServiceAPI } from '../services/couponServiceAPI';
 import type { Offer } from '../types';
@@ -194,7 +195,7 @@ export const OffersPage: React.FC = () => {
       </div>
 
       {/* Modal */}
-      {isModalOpen && (
+      {isModalOpen && ReactDOM.createPortal(
         <div
           className="fixed inset-0 z-[9999] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 overscroll-contain animate-in fade-in duration-150"
           onClick={() => setIsModalOpen(false)}
@@ -286,7 +287,7 @@ export const OffersPage: React.FC = () => {
                   rows={2}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Offer notes"
+                  placeholder="Optional details"
                   className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 resize-none"
                 />
               </div>
@@ -321,7 +322,8 @@ export const OffersPage: React.FC = () => {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

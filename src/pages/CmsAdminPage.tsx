@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { FileText, Plus, Trash2, Edit, RefreshCw, CheckCircle, XCircle, Globe, X } from 'lucide-react';
 import { cmsServiceAPI } from '../services/cmsServiceAPI';
 import type { CmsPage } from '../types';
@@ -230,7 +231,7 @@ export const CmsAdminPage: React.FC = () => {
       </div>
 
       {/* Modal */}
-      {isModalOpen && (
+      {isModalOpen && ReactDOM.createPortal(
         <div
           className="fixed inset-0 z-[9999] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 overscroll-contain animate-in fade-in duration-150"
           onClick={() => setIsModalOpen(false)}
@@ -295,7 +296,7 @@ export const CmsAdminPage: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block font-medium text-slate-700 dark:text-slate-300 mb-1">Sort Order</label>
+                  <label className="block font-medium text-slate-700 dark:text-slate-300 mb-1">Display Order</label>
                   <input
                     type="number"
                     value={sortOrder}
@@ -306,37 +307,26 @@ export const CmsAdminPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block font-medium text-slate-700 dark:text-slate-300 mb-1">Header Image URL</label>
-                <input
-                  type="url"
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  placeholder="https://..."
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200"
-                />
-              </div>
-
-              <div>
-                <label className="block font-medium text-slate-700 dark:text-slate-300 mb-1">Page Body Content (Markdown/HTML) *</label>
+                <label className="block font-medium text-slate-700 dark:text-slate-300 mb-1">Page Content (Markdown / HTML) *</label>
                 <textarea
                   rows={6}
                   required
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  placeholder="Full text content for the page..."
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-mono text-[11px]"
+                  placeholder="Enter full page content here..."
+                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-mono text-xs"
                 />
               </div>
 
               <div className="flex items-center gap-2 pt-1">
                 <input
                   type="checkbox"
-                  id="cmsPublished"
+                  id="pagePublished"
                   checked={isPublished}
                   onChange={(e) => setIsPublished(e.target.checked)}
                   className="rounded border-slate-300 text-accent focus:ring-accent"
                 />
-                <label htmlFor="cmsPublished" className="font-medium text-slate-700 dark:text-slate-300">
+                <label htmlFor="pagePublished" className="font-medium text-slate-700 dark:text-slate-300">
                   Publish to storefront
                 </label>
               </div>
@@ -358,7 +348,8 @@ export const CmsAdminPage: React.FC = () => {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

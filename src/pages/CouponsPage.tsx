@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { Ticket, Plus, Trash2, Edit, RefreshCw, CheckCircle, XCircle, Percent, DollarSign, X } from 'lucide-react';
 import { couponServiceAPI } from '../services/couponServiceAPI';
 import type { Coupon } from '../types';
@@ -248,7 +249,7 @@ export const CouponsPage: React.FC = () => {
       </div>
 
       {/* Modal */}
-      {isModalOpen && (
+      {isModalOpen && ReactDOM.createPortal(
         <div
           className="fixed inset-0 z-[9999] bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 overscroll-contain animate-in fade-in duration-150"
           onClick={() => setIsModalOpen(false)}
@@ -317,56 +318,33 @@ export const CouponsPage: React.FC = () => {
                     step="0.01"
                     value={minOrderValue}
                     onChange={(e) => setMinOrderValue(e.target.value)}
-                    placeholder="Optional"
+                    placeholder="Optional (e.g. 2000)"
                     className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200"
                   />
                 </div>
                 <div>
-                  <label className="block font-medium text-slate-700 dark:text-slate-300 mb-1">Max Discount</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={maxDiscount}
-                    onChange={(e) => setMaxDiscount(e.target.value)}
-                    placeholder="Optional (for %)"
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-medium text-slate-700 dark:text-slate-300 mb-1">Usage Limit</label>
+                  <label className="block font-medium text-slate-700 dark:text-slate-300 mb-1">Max Uses</label>
                   <input
                     type="number"
                     value={usageLimit}
                     onChange={(e) => setUsageLimit(e.target.value)}
-                    placeholder="Unlimited if empty"
+                    placeholder="Optional (e.g. 100)"
                     className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200"
                   />
-                </div>
-                <div>
-                  <label className="block font-medium text-slate-700 dark:text-slate-300 mb-1">Targeting</label>
-                  <select
-                    value={targeting}
-                    onChange={(e) => setTargeting(e.target.value as any)}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200"
-                  >
-                    <option value="all">All Customers</option>
-                    <option value="new_users">New Customers Only</option>
-                  </select>
                 </div>
               </div>
 
               <div>
-                <label className="block font-medium text-slate-700 dark:text-slate-300 mb-1">Description</label>
-                <textarea
-                  rows={2}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Optional internal notes"
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 resize-none"
-                />
+                <label className="block font-medium text-slate-700 dark:text-slate-300 mb-1">Targeting Group</label>
+                <select
+                  value={targeting}
+                  onChange={(e) => setTargeting(e.target.value as any)}
+                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200"
+                >
+                  <option value="all_users">All Customers</option>
+                  <option value="first_order">First Order Only</option>
+                  <option value="vip_members">VIP Members Only</option>
+                </select>
               </div>
 
               <div className="flex items-center gap-2 pt-1">
@@ -399,7 +377,8 @@ export const CouponsPage: React.FC = () => {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

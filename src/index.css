@@ -3,10 +3,6 @@
 @tailwind utilities;
 
 @layer base {
-  html {
-    scroll-behavior: smooth;
-  }
-
   body {
     @apply transition-colors duration-300;
     -webkit-tap-highlight-color: transparent;
@@ -35,9 +31,8 @@
     -moz-appearance: textfield !important;
   }
 
-  /* Fast, smooth modal popup scrolling */
-  .scroll-smooth {
-    scroll-behavior: smooth;
+  /* Fast, responsive modal container scrolling */
+  .scroll-fast {
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
   }
@@ -68,5 +63,23 @@
 
   .dark ::-webkit-scrollbar-thumb:hover {
     background: rgba(156, 163, 175, 0.4);
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold rounded-xl border border-transparent transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed select-none;
+  }
+
+  .btn-primary {
+    @apply bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white shadow-md shadow-indigo-600/20 border-indigo-500/30;
+  }
+
+  .btn-secondary {
+    @apply bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700;
+  }
+
+  .btn-danger {
+    @apply bg-rose-600 hover:bg-rose-500 active:bg-rose-700 text-white shadow-md shadow-rose-600/20 border-rose-500/30;
   }
 }
